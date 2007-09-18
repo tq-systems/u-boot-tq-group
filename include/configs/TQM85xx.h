@@ -148,7 +148,7 @@
 #define CFG_INIT_SP_OFFSET	CFG_GBL_DATA_OFFSET
 
 #define CFG_MONITOR_LEN		(256 * 1024)	/* Reserve 256kB for Mon*/
-#define CFG_MALLOC_LEN		(128 * 1024)	/* Reserved for malloc	*/
+#define CFG_MALLOC_LEN		(256 * 1024)	/* Reserved for malloc	*/
 
 /* Serial Port */
 #if defined(CONFIG_TQM8560)
@@ -349,8 +349,8 @@
  * Environment
  */
 #define CFG_ENV_IS_IN_FLASH	1
-#define CFG_ENV_ADDR		(CFG_MONITOR_BASE - 0x20000)
-#define CFG_ENV_SECT_SIZE	0x20000 /* 128K(one sector) for env	*/
+#define CFG_ENV_ADDR		(CFG_MONITOR_BASE - 0x40000)
+#define CFG_ENV_SECT_SIZE	0x40000 /* 256K(one sector (N)) for env	*/
 #define CFG_ENV_SIZE		0x2000
 #define CFG_ENV_ADDR_REDUND	(CFG_ENV_ADDR-CFG_ENV_SECT_SIZE)
 #define CFG_ENV_SIZE_REDUND	(CFG_ENV_SIZE)
