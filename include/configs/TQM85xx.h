@@ -86,7 +86,7 @@
  * actual resources get mapped (not physical addresses)
  */
 #define CFG_CCSRBAR_DEFAULT	0xFF700000	/* CCSRBAR Default	*/
-#define CFG_CCSRBAR		0xE0000000	/* relocated CCSRBAR	*/
+#define CFG_CCSRBAR		0xA0000000	/* relocated CCSRBAR	*/
 #define CFG_IMMR		CFG_CCSRBAR	/* PQII uses CFG_IMMR	*/
 
 /*
@@ -108,17 +108,17 @@
 /*
  * Flash on the Local Bus
  */
-#define CFG_FLASH0		0xFC000000
-#define CFG_FLASH1		0xF8000000
+#define CFG_FLASH0		0xE0000000
+#define CFG_FLASH1		0xC0000000
 #define CFG_FLASH_BANKS_LIST	{ CFG_FLASH1, CFG_FLASH0 }
 
 #define CFG_LBC_FLASH_BASE	CFG_FLASH1	/* Localbus flash start	*/
 #define CFG_FLASH_BASE		CFG_LBC_FLASH_BASE /* start of FLASH	*/
 
-#define CFG_BR0_PRELIM		0xfc001801	/* port size 32bit	*/
-#define CFG_OR0_PRELIM		0xfc000040	/* 64MB Flash		*/
-#define CFG_BR1_PRELIM		0xf8001801	/* port size 32bit	*/
-#define CFG_OR1_PRELIM		0xfc000040	/* 64MB Flash		*/
+#define CFG_BR0_PRELIM		0xE0001801	/* port size 32bit	*/
+#define CFG_OR0_PRELIM		0xE0000040	/* 512MB Flash		*/
+#define CFG_BR1_PRELIM		0xC0001801	/* port size 32bit	*/
+#define CFG_OR1_PRELIM		0xE0000040	/* 512MB Flash		*/
 
 #define CFG_FLASH_CFI				/* flash is CFI compat.	*/
 #define CFG_FLASH_CFI_DRIVER			/* Use common CFI driver*/
@@ -140,7 +140,7 @@
 
 #define CONFIG_L1_INIT_RAM
 #define CFG_INIT_RAM_LOCK	1
-#define CFG_INIT_RAM_ADDR	0xe4010000	/* Initial RAM address	*/
+#define CFG_INIT_RAM_ADDR	0xa4010000	/* Initial RAM address	*/
 #define CFG_INIT_RAM_END	0x4000		/* End used area in RAM	*/
 
 #define CFG_GBL_DATA_SIZE	128		/* num bytes initial data*/
@@ -226,9 +226,9 @@
 #define CFG_DTT_HYSTERESIS	3
 
 /* RapidIO MMU */
-#define CFG_RIO_MEM_BASE	0xc0000000	/* base address		*/
+#define CFG_RIO_MEM_BASE	0xb0000000	/* base address		*/
 #define CFG_RIO_MEM_PHYS	CFG_RIO_MEM_BASE
-#define CFG_RIO_MEM_SIZE	0x20000000	/* 128M			*/
+#define CFG_RIO_MEM_SIZE	0x10000000	/* 256M			*/
 
 /*
  * General PCI
@@ -237,7 +237,7 @@
 #define CFG_PCI1_MEM_BASE	0x80000000
 #define CFG_PCI1_MEM_PHYS	CFG_PCI1_MEM_BASE
 #define CFG_PCI1_MEM_SIZE	0x20000000	/* 512M			*/
-#define CFG_PCI1_IO_BASE	0xe2000000
+#define CFG_PCI1_IO_BASE	0xa2000000
 #define CFG_PCI1_IO_PHYS	CFG_PCI1_IO_BASE
 #define CFG_PCI1_IO_SIZE	0x1000000	/* 16M			*/
 
