@@ -53,7 +53,12 @@
 #define ORxU_AM_MSK	0xffff8000	/* Address Mask Mask		*/
 
 #define MxMR_OP_NORM	0x00000000	/* Normal Operation		*/
+#define MxMR_MAD	0x0000003F	/* Machine address, RAM address ptr*/
+#define MxMR_WLFx_3X	0x00000C00	/* Write loop executed 3 times	*/
+#define MxMR_GPL4_DIS	0x00040000	/* GPL4 output line disable	*/
 #define MxMR_DSx_2_CYCL 0x00400000	/* 2 cycle Disable Period	*/
+#define MxMR_DSx_3_CYCL 0x00800000	/* 3 cycle Disable Period	*/
+#define MxMR_DSx_4_CYCL 0x00C00000	/* 4 cycle Disable Period	*/
 #define MxMR_OP_WARR	0x10000000	/* Write to Array		*/
 #define MxMR_BSEL	0x80000000	/* Bus Select			*/
 
