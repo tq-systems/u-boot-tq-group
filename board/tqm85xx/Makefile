@@ -25,7 +25,14 @@ include $(TOPDIR)/config.mk
 
 LIB	= $(obj)lib$(BOARD).a
 
+@echo "board/tqm85xx/Makefile: BOARD_NAME = $(BOARD_NAME)" >&1
+echo "board/tqm85xx/Makefile: BOARD_NAME = $(BOARD_NAME)" >&1
+
+ifeq ($(BOARD_NAME),TQM8548)
+COBJS	:= $(BOARD).o sdram.o nand_flash.o
+else
 COBJS	:= $(BOARD).o sdram.o
+endif
 SOBJS	:= init.o
 #SOBJS	:=
 

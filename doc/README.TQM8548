@@ -56,7 +56,8 @@ New files:
 The following new files have been added by this project:
 (starting from u-boot-1.4/ directory)
 
-doc/README.TQM8548	  - this file
+doc/README.TQM8548	   - this file
+board/tqm85xx/nand_flash.c - low level nand flash driver for TQM8548
 
 
 New configuration options:
@@ -714,3 +715,328 @@ Hit any key to exit ...
 ## Application terminated, rc = 0x0
 =>
 
+------------------------------------------------------------------------------
+
+NAND Flash driver operation
+
+With NAND Flash support enabled (CONFIG_NAND) in TQM85xx.h, the U-Boot output
+appears on the serial terminal connected to COM1 as follows:
+
+------------------------------------------------------------------------------
+
+U-Boot 1.3.0-rc1-gc38b291c (Oct  1 2007 - 14:03:26)
+
+CPU:   8548_E, Version: 1.1, (0x80390011)
+Core:  E500, Version: 1.0, (0x80210010)
+Clock Configuration:
+       CPU:1199 MHz, CCB: 399 MHz,
+       DDR: 199 MHz, LBC:  24 MHz
+L1:    D-cache 32 kB enabled
+       I-cache 32 kB enabled
+Board: TQM8548
+PCI1:  32 bit, 33 MHz (compiled)
+I2C:   ready
+DTT:   1 is 36 C
+DRAM:  128 MB (CL=3)
+FLASH: 256 MB
+L2 cache 512KB: enabled
+NAND:  1024 MiB
+In:    serial
+Out:   serial
+Err:   serial
+Net:   TSEC0, TSEC1
+PS/2:  No device found
+Kbd:   reset failed, no ACK
+
+Type "run flash_nfs" to mount root filesystem over NFS
+
+Hit any key to stop autoboot:  0
+=>
+=> help
+?       - alias for 'help'
+autoscr - run script from memory
+base    - print or set address offset
+bdinfo  - print Board Info structure
+boot    - boot default, i.e., run 'bootcmd'
+bootd   - boot default, i.e., run 'bootcmd'
+bootm   - boot application image from memory
+bootp   - boot image via network using BootP/TFTP protocol
+cmp     - memory compare
+coninfo - print console devices and information
+cp      - memory copy
+crc32   - checksum calculation
+date    - get/set/reset date & time
+dhcp    - invoke DHCP client to obtain IP/boot params
+dtt     - Digital Thermometer and Themostat
+echo    - echo args to console
+eeprom  - EEPROM sub-system
+erase   - erase FLASH memory
+exit    - exit script
+flinfo  - print FLASH memory information
+fsinfo  - print information about filesystems
+fsload  - load binary file from a filesystem image
+go      - start application at address 'addr'
+help    - print online help
+icrc32  - checksum calculation
+iloop   - infinite loop on address range
+imd     - i2c memory display
+iminfo  - print header information for application image
+imls    - list all images found in flash
+imm     - i2c memory modify (auto-incrementing)
+imw     - memory write (fill)
+inm     - memory modify (constant address)
+iprobe  - probe to discover valid I2C chip addresses
+itest   - return true/false on integer compare
+loadb   - load binary file over serial line (kermit mode)
+loads   - load S-Record file over serial line
+loady   - load binary file over serial line (ymodem mode)
+loop    - infinite loop on address range
+ls      - list files in a directory (default /)
+md      - memory display
+mii     - MII utility commands
+mm      - memory modify (auto-incrementing)
+mtest   - simple RAM test
+mw      - memory write (fill)
+nand    - NAND sub-system
+nboot   - boot from NAND device
+nfs     - boot image via network using NFS protocol
+nm      - memory modify (constant address)
+pci     - list and access PCI Configuration Space
+ping    - send ICMP ECHO_REQUEST to network host
+printenv- print environment variables
+protect - enable or disable FLASH write protection
+rarpboot- boot image via network using RARP/TFTP protocol
+reset   - Perform RESET of the CPU
+run     - run commands in an environment variable
+saveenv - save environment variables to persistent storage
+setenv  - set environment variables
+sleep   - delay execution for some time
+sntp    - synchronize RTC via network
+test    - minimal test like /bin/sh
+tftpboot- boot image via network using TFTP protocol
+version - print monitor version
+=>
+
+------------------------------------------------------------------------------
+
+The following sequence was performed to test the "nand info" command:
+
+------------------------------------------------------------------------------
+=> nand info
+
+Device 0: NAND 1GiB 3,3V 8-bit, sector size 128 KiB
+=>
+
+------------------------------------------------------------------------------
+
+The following sequence was performed to test the NAND erase command:
+
+------------------------------------------------------------------------------
+=> nand erase
+
+NAND erase: device 0 whole chip
+Skipping bad block at  0x07560000
+Skipping bad block at  0x31ac0000
+Skipping bad block at  0x32140000
+Skipping bad block at  0x35f40000
+Skipping bad block at  0x3ffe0000
+
+OK
+=> nand dump 0
+Page 00000000 dump:
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff  ff ff ff ff ff ff ff ff
+OOB:
+        ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff
+        ff ff ff ff ff ff ff ff
+=>
+
+
+------------------------------------------------------------------------------
+
+The following sequence was performed to test the NAND write command:
+
+------------------------------------------------------------------------------
+=> tftp 200000 tqm85xx/uImage_tqm8548_thw
+Speed: 100, full duplex
+Using TSEC0 device
+TFTP from server 172.20.1.31; our IP address is 172.20.5.95
+Filename 'tqm85xx/uImage_tqm8548_thw'.
+Load address: 0x200000
+Loading: #################################################################
+################
+done
+Bytes transferred = 1177080 (11f5f8 hex)
+=> nand write 200000 0 120000
+
+NAND write: device 0 offset 0x0, size 0x120000
+ 1179648 bytes written: OK
+=>
+
+------------------------------------------------------------------------------
+
+The following sequence was performed to test the NAND read command:
+
+------------------------------------------------------------------------------
+=> nand read 400000 0 120000
+
+NAND read: device 0 offset 0x0, size 0x120000
+ 1179648 bytes read: OK
+=>
+
+------------------------------------------------------------------------------
+
+The following sequence was performed to verify the NAND data:
+
+------------------------------------------------------------------------------
+=> cmp.b 200000 400000 120000
+Total of 1179648 bytes were the same
+=>
+
+------------------------------------------------------------------------------
+
+The following sequence was performed to load Linux from NAND:
+
+------------------------------------------------------------------------------
+=> nboot 200000 0 0
+
+Loading from NAND 1GiB 3,3V 8-bit, offset 0x0
+   Image Name:   Linux-2.6.18-rc6-gf257e21a
+   Created:      2007-10-01   9:42:25 UTC
+   Image Type:   PowerPC Linux Kernel Image (gzip compressed)
+   Data Size:    1177016 Bytes =  1.1 MB
+   Load Address: 00000000
+   Entry Point:  00000000
+=>

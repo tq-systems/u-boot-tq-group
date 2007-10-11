@@ -50,6 +50,7 @@
 #define ORxG_CSNT	0x00000800	/* Chip Select Negation Time	*/
 
 #define ORxU_EAD	0x00000001	/* External addr latch delay	*/
+#define ORxU_EHTR	0x00000002	/* extended hold time on read	*/
 #define ORxU_BI		0x00000100	/* Burst Inhibit		*/
 #define ORxU_AM_MSK	0xffff8000	/* Address Mask Mask		*/
 
@@ -60,7 +61,10 @@
 #define MxMR_DSx_2_CYCL 0x00400000	/* 2 cycle Disable Period	*/
 #define MxMR_DSx_3_CYCL 0x00800000	/* 3 cycle Disable Period	*/
 #define MxMR_DSx_4_CYCL 0x00C00000	/* 4 cycle Disable Period	*/
+#define MxMR_OP_MSK	0x30000000	/* Command opcode mask		*/
 #define MxMR_OP_WARR	0x10000000	/* Write to Array		*/
+#define MxMR_OP_RARR	0x20000000	/* Write to Array		*/
+#define MxMR_OP_RUN	0x30000000	/* Write to Array		*/
 #define MxMR_BSEL	0x80000000	/* Bus Select			*/
 
 /* helpers to convert values into an OR address mask (GPCM mode) */

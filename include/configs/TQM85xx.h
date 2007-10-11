@@ -44,6 +44,13 @@
 #define CONFIG_PCI
 #define CONFIG_TSEC_ENET	/* tsec ethernet support        */
 
+/*
+ * only TQM8548 has NAND flash
+ */
+#if defined(CONFIG_TQM8548)
+#define CONFIG_NAND		/* nand flash support           */
+#endif
+
 #define CONFIG_MISC_INIT_R	1	/* Call misc_init_r             */
 
 /*
@@ -181,7 +188,12 @@
 #define CFG_INIT_SP_OFFSET	CFG_GBL_DATA_OFFSET
 
 #define CFG_MONITOR_LEN		(256 * 1024)	/* Reserve 256kB for Mon */
+
+#ifdef CONFIG_NAND
+#define CFG_MALLOC_LEN		(384 * 1024)	/* Reserved for malloc  */
+#else
 #define CFG_MALLOC_LEN		(256 * 1024)	/* Reserved for malloc  */
+#endif				/* CONFIG_NAND */
 
 /* Serial Port */
 #if defined(CONFIG_TQM8560)
@@ -285,6 +297,46 @@
 #define CFG_BR2_CAN		((CFG_CAN_BASE & BRx_BA_MSK) | \
 					BRx_PS_8 | BRx_MS_UPMC | BRx_V )
 #endif				/* CONFIG_CAN_DRIVER */
+
+/* NAND FLASH */
+#if defined(CONFIG_NAND)
+#undef CFG_NAND_LEGACY
+
+/* use JFFS2 ECC*/
+#define	CONFIG_MTD_NAND_ECC_JFFS2	1
+
+/* address distance between chip selects */
+#define	CFG_NAND_SELECT_DEVICE	1
+#define	CFG_NAND_CS_DIST	0x200
+
+#define CFG_NAND_SIZE		0x8000
+#define CFG_NAND0_BASE		0xA3010000
+#define CFG_NAND1_BASE		(CFG_NAND0_BASE + CFG_NAND_CS_DIST)
+#define CFG_NAND2_BASE		(CFG_NAND1_BASE + CFG_NAND_CS_DIST)
+#define CFG_NAND3_BASE		(CFG_NAND2_BASE + CFG_NAND_CS_DIST)
+
+#define CFG_MAX_NAND_DEVICE     1	/* Max number of NAND devices           */
+#define NAND_MAX_CHIPS		1
+
+#if (CFG_MAX_NAND_DEVICE == 1)
+#define CFG_NAND_BASE_LIST { CFG_NAND0_BASE }
+#elif (CFG_MAX_NAND_DEVICE == 4)
+#define	CFG_NAND_QUIET_TEST	1
+#define CFG_NAND_BASE_LIST { CFG_NAND0_BASE, \
+			     CFG_NAND1_BASE, \
+			     CFG_NAND2_BASE, \
+			     CFG_NAND3_BASE, \
+}
+#endif
+
+/* CS 3 - NAND Flash */
+#define CFG_BR3_PRELIM  ((CFG_NAND0_BASE & BRx_BA_MSK) | BRx_PS_8 | \
+				BRx_MS_UPMB | BRx_V  )
+#define CFG_OR3_PRELIM  (P2SZ_TO_AM(CFG_NAND_SIZE) | ORxU_BI )
+
+#define NAND_BIG_DELAY_US       25	/* max tR for Samsung devices   */
+
+#endif				/* CONFIG_NAND */
 
 /*
  * General PCI
@@ -473,6 +525,24 @@
 #if defined(CONFIG_PCI)
 #define CONFIG_CMD_PCI
 #endif
+
+#if defined(CONFIG_NAND)
+#define CONFIG_CMD_NAND
+#define CONFIG_CMD_JFFS2
+
+#define	CONFIG_JFFS2_NAND	1
+
+/* use NAND-FLash as JFFS2 device */
+#ifdef CONFIG_JFFS2_CMDLINE
+#define MTDIDS_DEFAULT		"nand0=TQM85xx-nand"
+#define MTDPARTS_DEFAULT	"mtdparts=TQM85xx-nand:-"
+#else
+#define CONFIG_JFFS2_NAND_DEV 	0	/* nand device jffs2 lives on */
+#define CONFIG_JFFS2_NAND_OFF 	0	/* start of jffs2 partition */
+#define CONFIG_JFFS2_NAND_SIZE	2*1024*1024	/* size of jffs2 partition */
+#endif				/* CONFIG_JFFS2_CMDLINE */
+
+#endif				/* CONFIG_NAND */
 
 #undef CONFIG_WATCHDOG		/* watchdog disabled            */
 
