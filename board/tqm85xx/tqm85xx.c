@@ -1,4 +1,7 @@
 /*
+ * (C) Copyright 2006
+ * Thomas Waehner, TQ-Systems GmbH, thomas.waehner@tqs.de.
+ *
  * (C) Copyright 2005
  * Stefan Roese, DENX Software Engineering, sr@denx.de.
  *
@@ -35,6 +38,14 @@
 #include <spd.h>
 #include <flash.h>
 
+#if defined(CONFIG_OF_FLAT_TREE)
+#include <ft_build.h>
+#endif
+
+#if defined(CONFIG_OF_LIBFDT)
+#include <libfdt.h>
+#endif
+
 DECLARE_GLOBAL_DATA_PTR;
 
 extern flash_info_t flash_info[];	/* FLASH chips info */
@@ -59,274 +70,274 @@ const iop_conf_t iop_conf_tab[4][32] = {
 
 	/* Port A configuration */
 	{			/*            conf ppar psor pdir podr pdat */
-					/* PA31 */ {1, 1, 1, 0, 0, 0},
-					/* FCC1 MII COL */
-					/* PA30 */ {1, 1, 1, 0, 0, 0},
-					/* FCC1 MII CRS */
-					/* PA29 */ {1, 1, 1, 1, 0, 0},
-					/* FCC1 MII TX_ER */
-					/* PA28 */ {1, 1, 1, 1, 0, 0},
-					/* FCC1 MII TX_EN */
-					/* PA27 */ {1, 1, 1, 0, 0, 0},
-					/* FCC1 MII RX_DV */
-					/* PA26 */ {1, 1, 1, 0, 0, 0},
-					/* FCC1 MII RX_ER */
-					/* PA25 */ {0, 1, 0, 1, 0, 0},
-					/* FCC1 ATMTXD[0] */
-					/* PA24 */ {0, 1, 0, 1, 0, 0},
-					/* FCC1 ATMTXD[1] */
-					/* PA23 */ {0, 1, 0, 1, 0, 0},
-					/* FCC1 ATMTXD[2] */
-					/* PA22 */ {0, 1, 0, 1, 0, 0},
-					/* FCC1 ATMTXD[3] */
-					/* PA21 */ {1, 1, 0, 1, 0, 0},
-					/* FCC1 MII TxD[3] */
-					/* PA20 */ {1, 1, 0, 1, 0, 0},
-					/* FCC1 MII TxD[2] */
-					/* PA19 */ {1, 1, 0, 1, 0, 0},
-					/* FCC1 MII TxD[1] */
-					/* PA18 */ {1, 1, 0, 1, 0, 0},
-					/* FCC1 MII TxD[0] */
-					/* PA17 */ {1, 1, 0, 0, 0, 0},
-					/* FCC1 MII RxD[0] */
-					/* PA16 */ {1, 1, 0, 0, 0, 0},
-					/* FCC1 MII RxD[1] */
-					/* PA15 */ {1, 1, 0, 0, 0, 0},
-					/* FCC1 MII RxD[2] */
-					/* PA14 */ {1, 1, 0, 0, 0, 0},
-					/* FCC1 MII RxD[3] */
-					/* PA13 */ {0, 1, 0, 0, 0, 0},
-					/* FCC1 ATMRXD[3] */
-					/* PA12 */ {0, 1, 0, 0, 0, 0},
-					/* FCC1 ATMRXD[2] */
-					/* PA11 */ {0, 1, 0, 0, 0, 0},
-					/* FCC1 ATMRXD[1] */
-					/* PA10 */ {0, 1, 0, 0, 0, 0},
-					/* FCC1 ATMRXD[0] */
-					/* PA9  */ {0, 1, 1, 1, 0, 0},
-					/* FCC1 L1TXD */
-					/* PA8  */ {0, 1, 1, 0, 0, 0},
-					/* FCC1 L1RXD */
-					/* PA7  */ {0, 0, 0, 1, 0, 0},
-					/* PA7 */
-					/* PA6  */ {0, 1, 1, 1, 0, 0},
-					/* TDM A1 L1RSYNC */
-					/* PA5  */ {0, 0, 0, 1, 0, 0},
-					/* PA5 */
-					/* PA4  */ {0, 0, 0, 1, 0, 0},
-					/* PA4 */
-					/* PA3  */ {0, 0, 0, 1, 0, 0},
-					/* PA3 */
-					/* PA2  */ {0, 0, 0, 1, 0, 0},
-					/* PA2 */
-					/* PA1  */ {0, 0, 0, 0, 0, 0},
-					/* FREERUN */
-					/* PA0  */ {0, 0, 0, 1, 0, 0}
-					/* PA0 */
+	 /* PA31 */ {1, 1, 1, 0, 0, 0},
+	 /* FCC1 MII COL */
+	 /* PA30 */ {1, 1, 1, 0, 0, 0},
+	 /* FCC1 MII CRS */
+	 /* PA29 */ {1, 1, 1, 1, 0, 0},
+	 /* FCC1 MII TX_ER */
+	 /* PA28 */ {1, 1, 1, 1, 0, 0},
+	 /* FCC1 MII TX_EN */
+	 /* PA27 */ {1, 1, 1, 0, 0, 0},
+	 /* FCC1 MII RX_DV */
+	 /* PA26 */ {1, 1, 1, 0, 0, 0},
+	 /* FCC1 MII RX_ER */
+	 /* PA25 */ {0, 1, 0, 1, 0, 0},
+	 /* FCC1 ATMTXD[0] */
+	 /* PA24 */ {0, 1, 0, 1, 0, 0},
+	 /* FCC1 ATMTXD[1] */
+	 /* PA23 */ {0, 1, 0, 1, 0, 0},
+	 /* FCC1 ATMTXD[2] */
+	 /* PA22 */ {0, 1, 0, 1, 0, 0},
+	 /* FCC1 ATMTXD[3] */
+	 /* PA21 */ {1, 1, 0, 1, 0, 0},
+	 /* FCC1 MII TxD[3] */
+	 /* PA20 */ {1, 1, 0, 1, 0, 0},
+	 /* FCC1 MII TxD[2] */
+	 /* PA19 */ {1, 1, 0, 1, 0, 0},
+	 /* FCC1 MII TxD[1] */
+	 /* PA18 */ {1, 1, 0, 1, 0, 0},
+	 /* FCC1 MII TxD[0] */
+	 /* PA17 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC1 MII RxD[0] */
+	 /* PA16 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC1 MII RxD[1] */
+	 /* PA15 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC1 MII RxD[2] */
+	 /* PA14 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC1 MII RxD[3] */
+	 /* PA13 */ {0, 1, 0, 0, 0, 0},
+	 /* FCC1 ATMRXD[3] */
+	 /* PA12 */ {0, 1, 0, 0, 0, 0},
+	 /* FCC1 ATMRXD[2] */
+	 /* PA11 */ {0, 1, 0, 0, 0, 0},
+	 /* FCC1 ATMRXD[1] */
+	 /* PA10 */ {0, 1, 0, 0, 0, 0},
+	 /* FCC1 ATMRXD[0] */
+	 /* PA9  */ {0, 1, 1, 1, 0, 0},
+	 /* FCC1 L1TXD */
+	 /* PA8  */ {0, 1, 1, 0, 0, 0},
+	 /* FCC1 L1RXD */
+	 /* PA7  */ {0, 0, 0, 1, 0, 0},
+	 /* PA7 */
+	 /* PA6  */ {0, 1, 1, 1, 0, 0},
+	 /* TDM A1 L1RSYNC */
+	 /* PA5  */ {0, 0, 0, 1, 0, 0},
+	 /* PA5 */
+	 /* PA4  */ {0, 0, 0, 1, 0, 0},
+	 /* PA4 */
+	 /* PA3  */ {0, 0, 0, 1, 0, 0},
+	 /* PA3 */
+	 /* PA2  */ {0, 0, 0, 1, 0, 0},
+	 /* PA2 */
+	 /* PA1  */ {0, 0, 0, 0, 0, 0},
+	 /* FREERUN */
+	 /* PA0  */ {0, 0, 0, 1, 0, 0}
+	 /* PA0 */
 	 },
 
 	/* Port B configuration */
 	{			/*            conf ppar psor pdir podr pdat */
-					/* PB31 */ {1, 1, 0, 1, 0, 0},
-					/* FCC2 MII TX_ER */
-					/* PB30 */ {1, 1, 0, 0, 0, 0},
-					/* FCC2 MII RX_DV */
-					/* PB29 */ {1, 1, 1, 1, 0, 0},
-					/* FCC2 MII TX_EN */
-					/* PB28 */ {1, 1, 0, 0, 0, 0},
-					/* FCC2 MII RX_ER */
-					/* PB27 */ {1, 1, 0, 0, 0, 0},
-					/* FCC2 MII COL */
-					/* PB26 */ {1, 1, 0, 0, 0, 0},
-					/* FCC2 MII CRS */
-					/* PB25 */ {1, 1, 0, 1, 0, 0},
-					/* FCC2 MII TxD[3] */
-					/* PB24 */ {1, 1, 0, 1, 0, 0},
-					/* FCC2 MII TxD[2] */
-					/* PB23 */ {1, 1, 0, 1, 0, 0},
-					/* FCC2 MII TxD[1] */
-					/* PB22 */ {1, 1, 0, 1, 0, 0},
-					/* FCC2 MII TxD[0] */
-					/* PB21 */ {1, 1, 0, 0, 0, 0},
-					/* FCC2 MII RxD[0] */
-					/* PB20 */ {1, 1, 0, 0, 0, 0},
-					/* FCC2 MII RxD[1] */
-					/* PB19 */ {1, 1, 0, 0, 0, 0},
-					/* FCC2 MII RxD[2] */
-					/* PB18 */ {1, 1, 0, 0, 0, 0},
-					/* FCC2 MII RxD[3] */
-					/* PB17 */ {1, 1, 0, 0, 0, 0},
-					/* FCC3:RX_DIV */
-					/* PB16 */ {1, 1, 0, 0, 0, 0},
-					/* FCC3:RX_ERR */
-					/* PB15 */ {1, 1, 0, 1, 0, 0},
-					/* FCC3:TX_ERR */
-					/* PB14 */ {1, 1, 0, 1, 0, 0},
-					/* FCC3:TX_EN */
-					/* PB13 */ {1, 1, 0, 0, 0, 0},
-					/* FCC3:COL */
-					/* PB12 */ {1, 1, 0, 0, 0, 0},
-					/* FCC3:CRS */
-					/* PB11 */ {1, 1, 0, 0, 0, 0},
-					/* FCC3:RXD */
-					/* PB10 */ {1, 1, 0, 0, 0, 0},
-					/* FCC3:RXD */
-					/* PB9  */ {1, 1, 0, 0, 0, 0},
-					/* FCC3:RXD */
-					/* PB8  */ {1, 1, 0, 0, 0, 0},
-					/* FCC3:RXD */
-					/* PB7  */ {1, 1, 0, 1, 0, 0},
-					/* FCC3:TXD */
-					/* PB6  */ {1, 1, 0, 1, 0, 0},
-					/* FCC3:TXD */
-					/* PB5  */ {1, 1, 0, 1, 0, 0},
-					/* FCC3:TXD */
-					/* PB4  */ {1, 1, 0, 1, 0, 0},
-					/* FCC3:TXD */
-					/* PB3  */ {0, 0, 0, 0, 0, 0},
-					/* pin doesn't exist */
-					/* PB2  */ {0, 0, 0, 0, 0, 0},
-					/* pin doesn't exist */
-					/* PB1  */ {0, 0, 0, 0, 0, 0},
-					/* pin doesn't exist */
-					/* PB0  */ {0, 0, 0, 0, 0, 0}
-					/* pin doesn't exist */
+	 /* PB31 */ {1, 1, 0, 1, 0, 0},
+	 /* FCC2 MII TX_ER */
+	 /* PB30 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC2 MII RX_DV */
+	 /* PB29 */ {1, 1, 1, 1, 0, 0},
+	 /* FCC2 MII TX_EN */
+	 /* PB28 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC2 MII RX_ER */
+	 /* PB27 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC2 MII COL */
+	 /* PB26 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC2 MII CRS */
+	 /* PB25 */ {1, 1, 0, 1, 0, 0},
+	 /* FCC2 MII TxD[3] */
+	 /* PB24 */ {1, 1, 0, 1, 0, 0},
+	 /* FCC2 MII TxD[2] */
+	 /* PB23 */ {1, 1, 0, 1, 0, 0},
+	 /* FCC2 MII TxD[1] */
+	 /* PB22 */ {1, 1, 0, 1, 0, 0},
+	 /* FCC2 MII TxD[0] */
+	 /* PB21 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC2 MII RxD[0] */
+	 /* PB20 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC2 MII RxD[1] */
+	 /* PB19 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC2 MII RxD[2] */
+	 /* PB18 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC2 MII RxD[3] */
+	 /* PB17 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC3:RX_DIV */
+	 /* PB16 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC3:RX_ERR */
+	 /* PB15 */ {1, 1, 0, 1, 0, 0},
+	 /* FCC3:TX_ERR */
+	 /* PB14 */ {1, 1, 0, 1, 0, 0},
+	 /* FCC3:TX_EN */
+	 /* PB13 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC3:COL */
+	 /* PB12 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC3:CRS */
+	 /* PB11 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC3:RXD */
+	 /* PB10 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC3:RXD */
+	 /* PB9  */ {1, 1, 0, 0, 0, 0},
+	 /* FCC3:RXD */
+	 /* PB8  */ {1, 1, 0, 0, 0, 0},
+	 /* FCC3:RXD */
+	 /* PB7  */ {1, 1, 0, 1, 0, 0},
+	 /* FCC3:TXD */
+	 /* PB6  */ {1, 1, 0, 1, 0, 0},
+	 /* FCC3:TXD */
+	 /* PB5  */ {1, 1, 0, 1, 0, 0},
+	 /* FCC3:TXD */
+	 /* PB4  */ {1, 1, 0, 1, 0, 0},
+	 /* FCC3:TXD */
+	 /* PB3  */ {0, 0, 0, 0, 0, 0},
+	 /* pin doesn't exist */
+	 /* PB2  */ {0, 0, 0, 0, 0, 0},
+	 /* pin doesn't exist */
+	 /* PB1  */ {0, 0, 0, 0, 0, 0},
+	 /* pin doesn't exist */
+	 /* PB0  */ {0, 0, 0, 0, 0, 0}
+	 /* pin doesn't exist */
 	 },
 
 	/* Port C */
 	{			/*            conf ppar psor pdir podr pdat */
-					/* PC31 */ {0, 0, 0, 1, 0, 0},
-					/* PC31 */
-					/* PC30 */ {0, 0, 0, 1, 0, 0},
-					/* PC30 */
-					/* PC29 */ {0, 1, 1, 0, 0, 0},
-					/* SCC1 EN *CLSN */
-					/* PC28 */ {0, 0, 0, 1, 0, 0},
-					/* PC28 */
-					/* PC27 */ {0, 0, 0, 1, 0, 0},
-					/* UART Clock in */
-					/* PC26 */ {0, 0, 0, 1, 0, 0},
-					/* PC26 */
-					/* PC25 */ {0, 0, 0, 1, 0, 0},
-					/* PC25 */
-					/* PC24 */ {0, 0, 0, 1, 0, 0},
-					/* PC24 */
-					/* PC23 */ {0, 1, 0, 1, 0, 0},
-					/* ATMTFCLK */
-					/* PC22 */ {0, 1, 0, 0, 0, 0},
-					/* ATMRFCLK */
-					/* PC21 */ {1, 1, 0, 0, 0, 0},
-					/* SCC1 EN RXCLK */
-					/* PC20 */ {1, 1, 0, 0, 0, 0},
-					/* SCC1 EN TXCLK */
-					/* PC19 */ {1, 1, 0, 0, 0, 0},
-					/* FCC2 MII RX_CLK CLK13 */
-					/* PC18 */ {1, 1, 0, 0, 0, 0},
-					/* FCC Tx Clock (CLK14) */
-					/* PC17 */ {1, 1, 0, 0, 0, 0},
-					/* PC17 */
-					/* PC16 */ {1, 1, 0, 0, 0, 0},
-					/* FCC Tx Clock (CLK16) */
-					/* PC15 */ {0, 1, 0, 0, 0, 0},
-					/* PC15 */
-					/* PC14 */ {0, 1, 0, 0, 0, 0},
-					/* SCC1 EN *CD */
-					/* PC13 */ {0, 1, 0, 0, 0, 0},
-					/* PC13 */
-					/* PC12 */ {0, 1, 0, 1, 0, 0},
-					/* PC12 */
-					/* PC11 */ {0, 0, 0, 1, 0, 0},
-					/* LXT971 transmit control */
-					/* PC10 */ {0, 0, 0, 1, 0, 0},
-					/* FETHMDC */
-					/* PC9  */ {0, 0, 0, 0, 0, 0},
-					/* FETHMDIO */
-					/* PC8  */ {0, 0, 0, 1, 0, 0},
-					/* PC8 */
-					/* PC7  */ {0, 0, 0, 1, 0, 0},
-					/* PC7 */
-					/* PC6  */ {0, 0, 0, 1, 0, 0},
-					/* PC6 */
-					/* PC5  */ {0, 0, 0, 1, 0, 0},
-					/* PC5 */
-					/* PC4  */ {0, 0, 0, 1, 0, 0},
-					/* PC4 */
-					/* PC3  */ {0, 0, 0, 1, 0, 0},
-					/* PC3 */
-					/* PC2  */ {0, 0, 0, 1, 0, 1},
-					/* ENET FDE */
-					/* PC1  */ {0, 0, 0, 1, 0, 0},
-					/* ENET DSQE */
-					/* PC0  */ {0, 0, 0, 1, 0, 0},
-					/* ENET LBK */
+	 /* PC31 */ {0, 0, 0, 1, 0, 0},
+	 /* PC31 */
+	 /* PC30 */ {0, 0, 0, 1, 0, 0},
+	 /* PC30 */
+	 /* PC29 */ {0, 1, 1, 0, 0, 0},
+	 /* SCC1 EN *CLSN */
+	 /* PC28 */ {0, 0, 0, 1, 0, 0},
+	 /* PC28 */
+	 /* PC27 */ {0, 0, 0, 1, 0, 0},
+	 /* UART Clock in */
+	 /* PC26 */ {0, 0, 0, 1, 0, 0},
+	 /* PC26 */
+	 /* PC25 */ {0, 0, 0, 1, 0, 0},
+	 /* PC25 */
+	 /* PC24 */ {0, 0, 0, 1, 0, 0},
+	 /* PC24 */
+	 /* PC23 */ {0, 1, 0, 1, 0, 0},
+	 /* ATMTFCLK */
+	 /* PC22 */ {0, 1, 0, 0, 0, 0},
+	 /* ATMRFCLK */
+	 /* PC21 */ {1, 1, 0, 0, 0, 0},
+	 /* SCC1 EN RXCLK */
+	 /* PC20 */ {1, 1, 0, 0, 0, 0},
+	 /* SCC1 EN TXCLK */
+	 /* PC19 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC2 MII RX_CLK CLK13 */
+	 /* PC18 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC Tx Clock (CLK14) */
+	 /* PC17 */ {1, 1, 0, 0, 0, 0},
+	 /* PC17 */
+	 /* PC16 */ {1, 1, 0, 0, 0, 0},
+	 /* FCC Tx Clock (CLK16) */
+	 /* PC15 */ {0, 1, 0, 0, 0, 0},
+	 /* PC15 */
+	 /* PC14 */ {0, 1, 0, 0, 0, 0},
+	 /* SCC1 EN *CD */
+	 /* PC13 */ {0, 1, 0, 0, 0, 0},
+	 /* PC13 */
+	 /* PC12 */ {0, 1, 0, 1, 0, 0},
+	 /* PC12 */
+	 /* PC11 */ {0, 0, 0, 1, 0, 0},
+	 /* LXT971 transmit control */
+	 /* PC10 */ {0, 0, 0, 1, 0, 0},
+	 /* FETHMDC */
+	 /* PC9  */ {0, 0, 0, 0, 0, 0},
+	 /* FETHMDIO */
+	 /* PC8  */ {0, 0, 0, 1, 0, 0},
+	 /* PC8 */
+	 /* PC7  */ {0, 0, 0, 1, 0, 0},
+	 /* PC7 */
+	 /* PC6  */ {0, 0, 0, 1, 0, 0},
+	 /* PC6 */
+	 /* PC5  */ {0, 0, 0, 1, 0, 0},
+	 /* PC5 */
+	 /* PC4  */ {0, 0, 0, 1, 0, 0},
+	 /* PC4 */
+	 /* PC3  */ {0, 0, 0, 1, 0, 0},
+	 /* PC3 */
+	 /* PC2  */ {0, 0, 0, 1, 0, 1},
+	 /* ENET FDE */
+	 /* PC1  */ {0, 0, 0, 1, 0, 0},
+	 /* ENET DSQE */
+	 /* PC0  */ {0, 0, 0, 1, 0, 0},
+	 /* ENET LBK */
 	 },
 
 	/* Port D */
 	{			/*            conf ppar psor pdir podr pdat */
-					/* PD31 */ {1, 1, 0, 0, 0, 0},
-					/* SCC1 EN RxD */
-					/* PD30 */ {1, 1, 1, 1, 0, 0},
-					/* SCC1 EN TxD */
-					/* PD29 */ {1, 1, 0, 1, 0, 0},
-					/* SCC1 EN TENA */
-					/* PD28 */ {1, 1, 0, 0, 0, 0},
-					/* PD28 */
-					/* PD27 */ {1, 1, 0, 1, 0, 0},
-					/* PD27 */
-					/* PD26 */ {1, 1, 0, 1, 0, 0},
-					/* PD26 */
-					/* PD25 */ {0, 0, 0, 1, 0, 0},
-					/* PD25 */
-					/* PD24 */ {0, 0, 0, 1, 0, 0},
-					/* PD24 */
-					/* PD23 */ {0, 0, 0, 1, 0, 0},
-					/* PD23 */
-					/* PD22 */ {0, 0, 0, 1, 0, 0},
-					/* PD22 */
-					/* PD21 */ {0, 0, 0, 1, 0, 0},
-					/* PD21 */
-					/* PD20 */ {0, 0, 0, 1, 0, 0},
-					/* PD20 */
-					/* PD19 */ {0, 0, 0, 1, 0, 0},
-					/* PD19 */
-					/* PD18 */ {0, 0, 0, 1, 0, 0},
-					/* PD18 */
-					/* PD17 */ {0, 1, 0, 0, 0, 0},
-					/* FCC1 ATMRXPRTY */
-					/* PD16 */ {0, 1, 0, 1, 0, 0},
-					/* FCC1 ATMTXPRTY */
-					/* PD15 */ {0, 1, 1, 0, 1, 0},
-					/* I2C SDA */
-					/* PD14 */ {0, 0, 0, 1, 0, 0},
-					/* LED */
-					/* PD13 */ {0, 0, 0, 0, 0, 0},
-					/* PD13 */
-					/* PD12 */ {0, 0, 0, 0, 0, 0},
-					/* PD12 */
-					/* PD11 */ {0, 0, 0, 0, 0, 0},
-					/* PD11 */
-					/* PD10 */ {0, 0, 0, 0, 0, 0},
-					/* PD10 */
-					/* PD9  */ {0, 1, 0, 1, 0, 0},
-					/* SMC1 TXD */
-					/* PD8  */ {0, 1, 0, 0, 0, 0},
-					/* SMC1 RXD */
-					/* PD7  */ {0, 0, 0, 1, 0, 1},
-					/* PD7 */
-					/* PD6  */ {0, 0, 0, 1, 0, 1},
-					/* PD6 */
-					/* PD5  */ {0, 0, 0, 1, 0, 1},
-					/* PD5 */
-					/* PD4  */ {0, 0, 0, 1, 0, 1},
-					/* PD4 */
-					/* PD3  */ {0, 0, 0, 0, 0, 0},
-					/* pin doesn't exist */
-					/* PD2  */ {0, 0, 0, 0, 0, 0},
-					/* pin doesn't exist */
-					/* PD1  */ {0, 0, 0, 0, 0, 0},
-					/* pin doesn't exist */
-					/* PD0  */ {0, 0, 0, 0, 0, 0}
-					/* pin doesn't exist */
+	 /* PD31 */ {1, 1, 0, 0, 0, 0},
+	 /* SCC1 EN RxD */
+	 /* PD30 */ {1, 1, 1, 1, 0, 0},
+	 /* SCC1 EN TxD */
+	 /* PD29 */ {1, 1, 0, 1, 0, 0},
+	 /* SCC1 EN TENA */
+	 /* PD28 */ {1, 1, 0, 0, 0, 0},
+	 /* PD28 */
+	 /* PD27 */ {1, 1, 0, 1, 0, 0},
+	 /* PD27 */
+	 /* PD26 */ {1, 1, 0, 1, 0, 0},
+	 /* PD26 */
+	 /* PD25 */ {0, 0, 0, 1, 0, 0},
+	 /* PD25 */
+	 /* PD24 */ {0, 0, 0, 1, 0, 0},
+	 /* PD24 */
+	 /* PD23 */ {0, 0, 0, 1, 0, 0},
+	 /* PD23 */
+	 /* PD22 */ {0, 0, 0, 1, 0, 0},
+	 /* PD22 */
+	 /* PD21 */ {0, 0, 0, 1, 0, 0},
+	 /* PD21 */
+	 /* PD20 */ {0, 0, 0, 1, 0, 0},
+	 /* PD20 */
+	 /* PD19 */ {0, 0, 0, 1, 0, 0},
+	 /* PD19 */
+	 /* PD18 */ {0, 0, 0, 1, 0, 0},
+	 /* PD18 */
+	 /* PD17 */ {0, 1, 0, 0, 0, 0},
+	 /* FCC1 ATMRXPRTY */
+	 /* PD16 */ {0, 1, 0, 1, 0, 0},
+	 /* FCC1 ATMTXPRTY */
+	 /* PD15 */ {0, 1, 1, 0, 1, 0},
+	 /* I2C SDA */
+	 /* PD14 */ {0, 0, 0, 1, 0, 0},
+	 /* LED */
+	 /* PD13 */ {0, 0, 0, 0, 0, 0},
+	 /* PD13 */
+	 /* PD12 */ {0, 0, 0, 0, 0, 0},
+	 /* PD12 */
+	 /* PD11 */ {0, 0, 0, 0, 0, 0},
+	 /* PD11 */
+	 /* PD10 */ {0, 0, 0, 0, 0, 0},
+	 /* PD10 */
+	 /* PD9  */ {0, 1, 0, 1, 0, 0},
+	 /* SMC1 TXD */
+	 /* PD8  */ {0, 1, 0, 0, 0, 0},
+	 /* SMC1 RXD */
+	 /* PD7  */ {0, 0, 0, 1, 0, 1},
+	 /* PD7 */
+	 /* PD6  */ {0, 0, 0, 1, 0, 1},
+	 /* PD6 */
+	 /* PD5  */ {0, 0, 0, 1, 0, 1},
+	 /* PD5 */
+	 /* PD4  */ {0, 0, 0, 1, 0, 1},
+	 /* PD4 */
+	 /* PD3  */ {0, 0, 0, 0, 0, 0},
+	 /* pin doesn't exist */
+	 /* PD2  */ {0, 0, 0, 0, 0, 0},
+	 /* pin doesn't exist */
+	 /* PD1  */ {0, 0, 0, 0, 0, 0},
+	 /* pin doesn't exist */
+	 /* PD0  */ {0, 0, 0, 0, 0, 0}
+	 /* pin doesn't exist */
 	 }
 };
 #endif				/*  CONFIG_CPM2 */
@@ -394,6 +405,20 @@ int misc_init_r (void)
 {
 	volatile immap_t *immap = (immap_t *) CFG_IMMR;
 	volatile ccsr_lbc_t *memctl = &immap->im_lbc;
+	sys_info_t sysinfo;
+	uint lbc_clk;
+	uint clkdiv;
+
+	get_sys_info (&sysinfo);
+	clkdiv = memctl->lcrr & 0x0f;
+#ifdef CONFIG_MPC8548
+	/*
+	 * The MPC8548 uses the same bit-representation for twice
+	 * the clock divider values.
+	 */
+	clkdiv *= 2;
+#endif
+	lbc_clk = sysinfo.freqSystemBus / 1000000 / clkdiv;
 
 	/*
 	 * Adjust flash start and offset to detected values
@@ -409,6 +434,15 @@ int misc_init_r (void)
 		    (CFG_OR1_PRELIM & 0x00007fff);
 		memctl->br1 = gd->bd->bi_flashstart |
 		    (CFG_BR1_PRELIM & 0x00007fff);
+
+		if (lbc_clk > 83) {
+			/*
+			 * According to timing specifications EAD must be set if
+			 * Local Bus Clock is > 83 MHz.
+			 */
+			memctl->or1 |= ORxU_EAD;
+		}
+
 		/*
 		 * Re-check to get correct base address for bank 1
 		 */
@@ -425,6 +459,15 @@ int misc_init_r (void)
 	    (CFG_OR0_PRELIM & 0x00007fff);
 	memctl->br0 = (gd->bd->bi_flashstart + flash_info[0].size) |
 	    (CFG_BR0_PRELIM & 0x00007fff);
+
+	if (lbc_clk > 83) {
+		/*
+		 * According to timing specifications EAD must be set if
+		 * Local Bus Clock is > 83 MHz.
+		 */
+		memctl->or1 |= ORxU_EAD;
+	}
+
 	/*
 	 * Re-check to get correct base address for bank 0
 	 */
@@ -489,13 +532,92 @@ static void upmc_write (u_char addr, uint val)
 void local_bus_init (void)
 {
 	volatile immap_t *immap = (immap_t *) CFG_IMMR;
-	volatile ccsr_gur_t *gur = &immap->im_gur;
 	volatile ccsr_lbc_t *lbc = &immap->im_lbc;
+#ifndef CONFIG_MPC8548
+	volatile ccsr_gur_t *gur = &immap->im_gur;
+#endif				/* CONFIG_MPC8548 */
 
 	uint clkdiv;
-	uint lbc_hz;
+	uint lbc_clk;
+	uint lcrr;
+	uint svr;
+	uint dummy;
 	sys_info_t sysinfo;
 
+	get_sys_info (&sysinfo);
+	clkdiv = lbc->lcrr & 0x0f;
+
+#ifdef CONFIG_MPC8548
+	/*
+	 * The MPC8548 uses the same bit-representation for twice
+	 * the clock divider values.
+	 */
+	clkdiv *= 2;
+
+	svr = get_svr ();
+	if (SVR_MAJ (svr) < 2) {
+		/*
+		 * MPC revision < 2.0
+		 * According to MPC8548E_Device_Errata Rev. L, Erratum LBIU1:
+		 * Modify engineering use only register at address 0xE_0F20.
+		 * "1. Read register at offset 0xE_0F20
+		 * 2. And value with 0x0000_FFFF
+		 * 3. OR result with 0x0000_0004
+		 * 4. Write result back to offset 0xE_0F20."
+
+		 * According to MPC8548E_Device_Errata Rev. L, Erratum LBIU2:
+		 * Modify engineering use only register at address 0xE_0F20.
+		 * "1. Read register at offset 0xE_0F20
+		 * 2. And value with 0xFFFF_FFDF
+		 * 3. Write result back to offset 0xE_0F20."
+
+		 * Since it is the same register, we do the modification in one step.
+		 */
+		dummy = *(volatile uint *)((uint) immap + 0x000E0F20);
+		dummy &= 0x0000FFDF;
+		dummy |= 0x00000004;
+		*(volatile uint *)((uint) immap + 0x000E0F20) = dummy;
+	}
+#endif
+	lbc_clk = sysinfo.freqSystemBus / 1000000 / clkdiv;
+
+	lcrr = CFG_LBC_LCRR;
+
+	if (lbc_clk > 83) {
+		/*
+		 * Local Bus Clock > 83.3 MHz.
+		 * According to timing specifications set LCRR[EADC]
+		 * to 2 delay cycles.
+		 */
+		lcrr &= ~LCRR_EADC_MSK;
+		lcrr |= LCRR_EADC_2;
+	}
+
+	if (lbc_clk >= 66) {
+		/*
+		 * According to MPC8548ERMAD Rev. 1.3, 13.3.1.16, 13-30
+		 * disable PLL bypass for Local Bus Clock > 83 MHz.
+		 */
+		lcrr &= (~LCRR_DBYP);	/* DLL Enabled */
+
+	} else {
+		lcrr |= LCRR_DBYP;	/* DLL Bypass */
+	}
+
+	lbc->lcrr = lcrr;
+	asm ("sync;isync;msync");
+
+	/*
+	 * According to MPC8548ERMAD Rev.1.3 read back LCRR and terminate
+	 * with isync
+	 */
+	lcrr = lbc->lcrr;
+	asm ("isync;");
+
+	/* let DLL stabilize */
+	udelay (500);
+
+#ifndef CONFIG_MPC8548
 	/*
 	 * Errata LBC11.
 	 * Fix Local Bus clock glitch when DLL is enabled.
@@ -504,73 +626,46 @@ void local_bus_init (void)
 	 * If localbus freq is > 133Mhz, DLL can be safely enabled.
 	 * Between 66 and 133, the DLL is enabled with an override workaround.
 	 */
-
-	get_sys_info (&sysinfo);
-	clkdiv = lbc->lcrr & 0x0f;
-	lbc_hz = sysinfo.freqSystemBus / 1000000 / clkdiv;
-
-	if (lbc_hz < 66) {
-		lbc->lcrr = CFG_LBC_LCRR | 0x80000000;	/* DLL Bypass */
-		lbc->ltedr = 0xa4c80000;	/* DK: !!! */
-
-	} else if (lbc_hz >= 133) {
-		lbc->lcrr = CFG_LBC_LCRR & (~0x80000000);	/* DLL Enabled */
-
-	} else {
-		/*
-		 * On REV1 boards, need to change CLKDIV before enable DLL.
-		 * Default CLKDIV is 8, change it to 4 temporarily.
-		 */
-		uint pvr = get_pvr ();
-		uint temp_lbcdll = 0;
-
-		if (pvr == PVR_85xx_REV1) {
-			/* FIXME: Justify the high bit here. */
-			lbc->lcrr = 0x10000004;
-		}
-
-		lbc->lcrr = CFG_LBC_LCRR & (~0x80000000);	/* DLL Enabled */
-		udelay (200);
-
-		/*
-		 * Sample LBC DLL ctrl reg, upshift it to set the
-		 * override bits.
-		 */
-		temp_lbcdll = gur->lbcdllcr;
-		gur->lbcdllcr = (((temp_lbcdll & 0xff) << 16) | 0x80000000);
-		asm ("sync;isync;msync");
-	}
+	if ((lbc_clk >= 66) && (lbc_clk <= 133) {
+	    uint temp_lbcdll;
+	    /*
+	     * Sample LBC DLL ctrl reg, upshift it to set the
+	     * override bits.
+	     */
+	    temp_lbcdll = gur->lbcdllcr;
+	    gur->lbcdllcr = (((temp_lbcdll & 0xff) << 16) | 0x80000000);
+	    asm ("sync;isync;msync");}
+#endif				/* CONFIG_MPC8548 */
 
 #ifdef	CONFIG_CAN_DRIVER
-	/* Initialize OR2 / BR2 */
-	lbc->or2 = CFG_OR2_CAN;
-	lbc->br2 = CFG_BR2_CAN;
+	    /* Initialize OR2 / BR2 */
+	    lbc->or2 = CFG_OR2_CAN; lbc->br2 = CFG_BR2_CAN; if (lbc_clk > 83) {
+	    /*
+	     * According to timing specifications EAD must be set if
+	     * Local Bus Clock is > 83 MHz.
+	     */
+	    lbc->or2 |= ORxU_EAD;}
 
-	/* LGPL4 is UPWAIT */
-	lbc->mcmr = MxMR_DSx_4_CYCL | MxMR_GPL4_DIS | MxMR_WLFx_3X;
-
-	/* Initialize UPMC for CAN: single read */
-	upmc_write (0x00, 0xFFFFED00);
-	upmc_write (0x01, 0xCCFFCC00);
-	upmc_write (0x02, 0x00FFCF00);
-	upmc_write (0x03, 0x00FFCF00);
-	upmc_write (0x04, 0x00FFDC00);
-	upmc_write (0x05, 0x00FFCF00);
-	upmc_write (0x06, 0x00FFED00);
-	upmc_write (0x07, 0x3FFFCC07);
-
-	/* Initialize UPMC for CAN: single write */
-	upmc_write (0x18, 0xFFFFED00);
-	upmc_write (0x19, 0xCCFFEC00);
-	upmc_write (0x1A, 0x00FFED80);
-	upmc_write (0x1B, 0x00FFED80);
-	upmc_write (0x1C, 0x00FFFC00);
-	upmc_write (0x1D, 0x0FFFEC00);
-	upmc_write (0x1E, 0x0FFFEF00);
-	upmc_write (0x1F, 0x3FFFEC05);
+	    /* LGPL4 is UPWAIT */
+	    lbc->mcmr = MxMR_DSx_3_CYCL | MxMR_GPL4_DIS | MxMR_WLFx_3X;
+	    /* Initialize UPMC for CAN: single read */
+	    upmc_write (0x00, 0xFFFFED00);
+	    upmc_write (0x01, 0xCCFFCC00);
+	    upmc_write (0x02, 0x00FFCF00);
+	    upmc_write (0x03, 0x00FFCF00);
+	    upmc_write (0x04, 0x00FFDC00);
+	    upmc_write (0x05, 0x00FFCF00);
+	    upmc_write (0x06, 0x00FFED00); upmc_write (0x07, 0x3FFFCC07);
+	    /* Initialize UPMC for CAN: single write */
+	    upmc_write (0x18, 0xFFFFED00);
+	    upmc_write (0x19, 0xCCFFEC00);
+	    upmc_write (0x1A, 0x00FFED80);
+	    upmc_write (0x1B, 0x00FFED80);
+	    upmc_write (0x1C, 0x00FFFC00);
+	    upmc_write (0x1D, 0x0FFFEC00);
+	    upmc_write (0x1E, 0x0FFFEF00); upmc_write (0x1F, 0x3FFFEC05);
 #endif				/* CONFIG_CAN_DRIVER */
-
-}
+	    }
 
 #if defined(CONFIG_PCI)
 /*
@@ -578,37 +673,62 @@ void local_bus_init (void)
  */
 
 #ifndef CONFIG_PCI_PNP
-static struct pci_config_table pci_mpc85xxads_config_table[] = {
-	{PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID,
-	 PCI_IDSEL_NUMBER, PCI_ANY_ID,
-	 pci_cfgfunc_config_device, {PCI_ENET0_IOADDR,
-				     PCI_ENET0_MEMADDR,
-				     PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER}},
-	{}
-};
+	    static struct pci_config_table pci_mpc85xxads_config_table[] = {
+	    {
+	    PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID, PCI_ANY_ID,
+	    PCI_IDSEL_NUMBER, PCI_ANY_ID, pci_cfgfunc_config_device, {
+	    PCI_ENET0_IOADDR,
+	    PCI_ENET0_MEMADDR, PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER}}, {
+	    }
+	    };
 #endif
-
-static struct pci_controller hose = {
+	    static struct pci_controller hose = {
 #ifndef CONFIG_PCI_PNP
       config_table:pci_mpc85xxads_config_table,
 #endif
-};
-
+	    };
 #endif				/* CONFIG_PCI */
-
-void pci_init_board (void)
-{
+	    void pci_init_board (void) {
 #ifdef CONFIG_PCI
-	pci_mpc85xx_init (&hose);
+	    pci_mpc85xx_init (&hose);
 #endif				/* CONFIG_PCI */
-}
+	    }
+
+#if defined(CONFIG_OF_LIBFDT) && !defined(CONFIG_OF_FLAT_TREE)
+	    void ft_pci_setup (void *blob, bd_t * bd) {
+	    int nodeoffset;
+	    int err;
+	    int tmp[2];
+	    nodeoffset = fdt_find_node_by_path (blob, "/" OF_SOC "/pci@8000");
+	    if (nodeoffset >= 0) {
+	    tmp[0] = cpu_to_be32 (hose.first_busno);
+	    tmp[1] = cpu_to_be32 (hose.last_busno);
+	    err = fdt_setprop (blob, nodeoffset, "bus-range",
+			       tmp, sizeof (tmp));
+	    debug ("PCI@8000 first_busno=%d last_busno=%d\n", tmp[0], tmp[1]);}
+	    }
+#endif				/* CONFIG_OF_LIBFDT */
 
 #ifdef CONFIG_BOARD_EARLY_INIT_R
-int board_early_init_r (void)
-{
+	    int board_early_init_r (void) {
 #ifdef CONFIG_PS2MULT
-	ps2mult_early_init ();
+	    ps2mult_early_init ();
 #endif				/* CONFIG_PS2MULT */
-	return (0);
-}
+	    return (0);}
 #endif				/* CONFIG_BOARD_EARLY_INIT_R */
+
+#if defined(CONFIG_OF_BOARD_SETUP)
+	    void ft_board_setup (void *blob, bd_t * bd) {
+#if defined(CONFIG_OF_FLAT_TREE)
+	    u32 * p;
+	    int len;
+	    p = ft_get_prop (blob, "/memory/reg", &len); if (p != NULL) {
+	    *p++ = cpu_to_be32 (bd->bi_memstart);
+	    *p = cpu_to_be32 (bd->bi_memsize);}
+#endif				/* CONFIG_OF_FLAT_TREE */
+	    ft_cpu_setup (blob, bd);
+#ifdef CONFIG_PCI
+	    ft_pci_setup (blob, bd);
+#endif				/* CONFIG_PCI */
+	    }
+#endif				/* CONFIG_OF_BOARD_SETUP */

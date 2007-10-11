@@ -49,6 +49,7 @@
 #define ORxG_ACS_DIV2	0x00000600	/* CS is output 1/2 a clock later*/
 #define ORxG_CSNT	0x00000800	/* Chip Select Negation Time	*/
 
+#define ORxU_EAD	0x00000001	/* External addr latch delay	*/
 #define ORxU_BI		0x00000100	/* Burst Inhibit		*/
 #define ORxU_AM_MSK	0xffff8000	/* Address Mask Mask		*/
 
@@ -65,5 +66,13 @@
 /* helpers to convert values into an OR address mask (GPCM mode) */
 #define P2SZ_TO_AM(s)	((~((s) - 1)) & 0xffff8000)	/* must be pow of 2 */
 #define MEG_TO_AM(m)	P2SZ_TO_AM((m) << 20)
+
+/* Clock Ratio Register */
+#define LCRR_DBYP	0x80000000	/* PLL bypass			*/
+#define	LCRR_EADC_MSK	0x00030000	/* external address delay cycles mask */
+#define	LCRR_EADC_4	0x00000000	/* 4 cycles			*/
+#define	LCRR_EADC_1	0x00010000	/* 1 cycle			*/
+#define	LCRR_EADC_2	0x00020000	/* 2 cycles			*/
+#define	LCRR_EADC_3	0x00030000	/* 3 cycles			*/
 
 #endif	/* __MPC85xx_H__ */

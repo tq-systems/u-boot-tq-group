@@ -116,7 +116,7 @@ ifeq ($(OBJTREE)/include/config.mk,$(wildcard $(OBJTREE)/include/config.mk))
 
 # load ARCH, BOARD, and CPU configuration
 include $(OBJTREE)/include/config.mk
-export	ARCH CPU BOARD VENDOR SOC
+export	ARCH CPU BOARD VENDOR SOC BOARD_NAME
 
 ifndef CROSS_COMPILE
 ifeq ($(HOSTARCH),$(ARCH))
@@ -1951,6 +1951,7 @@ stxssa_4M_config:	unconfig
 
 TQM8540_config		\
 TQM8541_config		\
+TQM8548_config		\
 TQM8555_config		\
 TQM8560_config:		unconfig
 	@mkdir -p $(obj)include
@@ -1962,7 +1963,8 @@ TQM8560_config:		unconfig
 	echo "#define CONFIG_HOSTNAME tqm$${CTYPE}">>$(obj)include/config.h; \
 	echo "#define CONFIG_BOARDNAME \"TQM$${CTYPE}\"">>$(obj)include/config.h; \
 	echo "#define CFG_BOOTFILE_PATH \"/tftpboot/tqm$${CTYPE}/uImage\"">>$(obj)include/config.h
-	@$(MKCONFIG) -a TQM85xx ppc mpc85xx tqm85xx
+	@$(MKCONFIG) -a -n $(@:_config=) TQM85xx ppc mpc85xx tqm85xx
+	@echo "BOARD_NAME = $(@:_config=)" >> $(obj)include/config.mk
 
 #########################################################################
 ## MPC86xx Systems

@@ -94,3 +94,36 @@ ulong get_bus_freq (ulong dummy)
 
 	return val;
 }
+
+
+/********************************************
+ * get_local_bus_freq
+ * return system bus freq in Hz
+ *********************************************/
+ulong get_local_bus_freq (ulong dummy)
+{
+	ulong val;
+	ulong clkdiv;		/* clock divider portion of lcrr */
+	volatile immap_t *immap = (immap_t *)CFG_IMMR;
+	volatile ccsr_lbc_t *lbc= &immap->im_lbc;
+
+	sys_info_t sys_info;
+
+	get_sys_info (&sys_info);
+
+	clkdiv = lbc->lcrr & 0x0f;
+	if (clkdiv == 2 || clkdiv == 4 || clkdiv == 8) {
+#ifdef CONFIG_MPC8548
+		/*
+		 * Yes, the entire PQ38 family use the same
+		 * bit-representation for twice the clock divider values.
+		 */
+		clkdiv *= 2;
+#endif
+		val = sys_info.freqSystemBus / clkdiv;
+	}
+	else
+		val = 0;
+
+	return val;
+}

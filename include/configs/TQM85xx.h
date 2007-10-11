@@ -1,4 +1,7 @@
 /*
+ * (C) Copyright 2007
+ * Thomas Waehner, TQ-System GmbH, thomas.waehner@tqs.de.
+ *
  * (C) Copyright 2005
  * Stefan Roese, DENX Software Engineering, sr@denx.de.
  *
@@ -27,7 +30,7 @@
  */
 
 /*
- * TQM85xx (8560/40/55/41) board configuration file
+ * TQM85xx (8560/40/55/41/48) board configuration file
  */
 
 #ifndef __CONFIG_H
@@ -44,9 +47,9 @@
 #define CONFIG_MISC_INIT_R	1	/* Call misc_init_r             */
 
 /*
- * Only MPC8540 doesn't have CPM module
+ * Only MPC8540/MPC8548 doesn't have CPM module
  */
-#ifndef CONFIG_MPC8540
+#if !defined(CONFIG_MPC8540) && !defined(CONFIG_MPC8548)
 #define CONFIG_CPM2		1	/* has CPM2                     */
 #endif
 
@@ -105,6 +108,14 @@
 #define CONFIG_DDR_DEFAULT_CL	30	/* CAS latency 3        */
 #endif				/* defined(CONFIG_TQM8541) || defined(CONFIG_TQM8555) */
 
+#if defined(CONFIG_TQM8548)
+/*
+ * CAS latency currently not used in DDR2 initialization, but still
+ * defined for future use.
+ */
+#define CONFIG_DDR_DEFAULT_CL	30	/* CAS latency 3        */
+#endif				/* defined(CONFIG_TQM8548) */
+
 /*
  * Flash on the Local Bus
  */
@@ -115,9 +126,26 @@
 #define CFG_LBC_FLASH_BASE	CFG_FLASH1	/* Localbus flash start */
 #define CFG_FLASH_BASE		CFG_LBC_FLASH_BASE	/* start of FLASH    */
 
+/* Default ORx timings are for <= 41.7 MHz Local Bus Clock.
+ *
+ * For other Local Bus Clocks see following table:
+ *
+ * Clock/MHz   CFG_ORx_PRELIM
+ * 166         0x.....CB5
+ * 133         0x.....C85
+ * 100         0x.....C65
+ *  83         0x.....FB2
+ *  66         0x.....C82
+ *  50         0x.....C60
+ *  42         0x.....040
+ *  33         0x.....030
+ *  25         0x.....020
+*/
 #define CFG_BR0_PRELIM		0xE0001801	/* port size 32bit      */
-#define CFG_OR0_PRELIM		0xE0000040	/* 512MB Flash          */
 #define CFG_BR1_PRELIM		0xC0001801	/* port size 32bit      */
+
+/* 42MHz LBC */
+#define CFG_OR0_PRELIM		0xE0000040	/* 512MB Flash          */
 #define CFG_OR1_PRELIM		0xE0000040	/* 512MB Flash          */
 
 #define CFG_FLASH_CFI		/* flash is CFI compat. */
@@ -133,7 +161,12 @@
 
 #define CFG_MONITOR_BASE	TEXT_BASE	/* start of monitor     */
 
+/*
+ * when changing the Local Bus clock divider you have to change the
+ * timing values in CFG_ORx_PRELIM.
+ */
 #define CFG_LBC_LCRR		0x00030008	/* LB clock ratio reg     */
+
 #define CFG_LBC_LBCR		0x00000000	/* LB config reg          */
 #define CFG_LBC_LSRT		0x20000000	/* LB sdram refresh timer */
 #define CFG_LBC_MRTPR		0x20000000	/* LB refresh timer presc. */
@@ -191,6 +224,18 @@
 #define	CFG_PROMPT_HUSH_PS2	"> "
 #endif
 
+#if 0				/* 2007-09-20 THW, currently disabled. Activate when switching to powerPc Tree */
+/* pass open firmware flat tree */
+#define CONFIG_OF_LIBFDT	1
+#define CONFIG_OF_FLAT_TREE	1
+#define CONFIG_OF_BOARD_SETUP	1
+
+#define OF_CPU			"PowerPC,8548@0"
+#define OF_SOC			"soc8548@a0000000"
+#define OF_TBCLK		(bd->bi_busfreq / 8)
+#define OF_STDOUT_PATH		"/soc8548@a0000000/serial@4500"
+#endif
+
 /*
  * I2C
  */
@@ -224,10 +269,12 @@
 #define CFG_DTT_LOW_TEMP	-30
 #define CFG_DTT_HYSTERESIS	3
 
+#ifndef CONFIG_TQM8548
 /* RapidIO MMU */
 #define CFG_RIO_MEM_BASE	0xb0000000	/* base address         */
 #define CFG_RIO_MEM_PHYS	CFG_RIO_MEM_BASE
 #define CFG_RIO_MEM_SIZE	0x10000000	/* 256M                 */
+#endif				/* CONFIG_TQM8548 */
 
 /* CAN */
 #undef	CONFIG_CAN_DRIVER	/* CAN Driver support disabled  */
@@ -249,6 +296,19 @@
 #define CFG_PCI1_IO_BASE	0xa2000000
 #define CFG_PCI1_IO_PHYS	CFG_PCI1_IO_BASE
 #define CFG_PCI1_IO_SIZE	0x1000000	/* 16M                  */
+
+#ifdef CONFIG_TQM8548
+/*
+ * General PCI express
+ * Addresses are mapped 1-1.
+ */
+#define CFG_PEX1_MEM_BASE	0xB0000000
+#define CFG_PEX1_MEM_PHYS	CFG_PEX1_MEM_BASE
+#define CFG_PEX1_MEM_SIZE	0x10000000	/* 256M                 */
+#define CFG_PEX1_IO_BASE	0xaf000000
+#define CFG_PEX1_IO_PHYS	CFG_PEX1_IO_BASE
+#define CFG_PEX1_IO_SIZE	0x1000000	/* 16M                  */
+#endif				/* CONFIG_TQM8548 */
 
 #if defined(CONFIG_PCI)
 
@@ -281,6 +341,25 @@
 #define CONFIG_HAS_ETH0
 #define CONFIG_HAS_ETH1
 #define CONFIG_HAS_ETH2
+
+#if defined(CONFIG_TQM8548)
+/*
+ * TQM8548 has 4 ethernet ports. 4 ETSEC's.
+ *
+ * On the STK85xx Starterkit the ETSEC3/4 ports are on an
+ * additional adapter (AIO) between module and Starterkit.
+ */
+#define CONFIG_MPC85XX_TSEC3	1
+#define CONFIG_MPC85XX_TSEC3_NAME	"TSEC2"
+#define CONFIG_MPC85XX_TSEC4	1
+#define CONFIG_MPC85XX_TSEC4_NAME	"TSEC3"
+#define TSEC3_PHY_ADDR		4
+#define TSEC4_PHY_ADDR		5
+#define TSEC3_PHYIDX		0
+#define TSEC4_PHYIDX		0
+#define CONFIG_HAS_ETH3
+#define CONFIG_HAS_ETH4
+#endif
 
 /* Options are TSEC[0-1], FEC */
 #define CONFIG_ETHPRIME		"TSEC0"

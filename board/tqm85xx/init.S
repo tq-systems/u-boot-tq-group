@@ -62,7 +62,11 @@ tlb1_entry:
 	/*
 	 * Number of TLB0 and TLB1 entries in the following table
 	 */
+#if defined(CONFIG_TQM8548)
+	.long 15
+#else
 	.long 14
+#endif	/* TQM8548 */
 	/*
 	 * TLB0         16K     Cacheable, non-guarded
 	 * 0xd001_0000  16K     Temporary Global data for initialization
@@ -153,7 +157,18 @@ tlb1_entry:
 			 0, 0, 0, 0, 1, 0, 1, 0)
 	.long TLB1_MAS3 (E500_TLB_RPN (CFG_PCI1_MEM_BASE + 0x10000000),
 			 0, 0, 0, 0, 0, 1, 0, 1, 0, 1)
-
+#if defined(CONFIG_TQM8548)
+	/*
+	 * TLB 6:       256M    Non-cacheable, guarded
+	 * 0xb0000000   256M    PCI express MEM
+	 */
+	.long TLB1_MAS0 (1, 6, 0)
+	.long TLB1_MAS1 (1, 1, 0, 0, BOOKE_PAGESZ_256M)
+	.long TLB1_MAS2 (E500_TLB_EPN (CFG_PEX1_MEM_BASE),
+			 0, 0, 0, 0, 1, 0, 1, 0)
+	.long TLB1_MAS3 (E500_TLB_RPN (CFG_PEX1_MEM_BASE),
+			 0, 0, 0, 0, 0, 1, 0, 1, 0, 1)
+#else
 	/*
 	 * TLB 6:       256M    Non-cacheable, guarded
 	 * 0xb0000000   256M    Rapid IO MEM
@@ -164,12 +179,12 @@ tlb1_entry:
 			 0, 0, 0, 0, 1, 0, 1, 0)
 	.long TLB1_MAS3 (E500_TLB_RPN (CFG_RIO_MEM_BASE),
 			 0, 0, 0, 0, 0, 1, 0, 1, 0, 1)
-
+#endif				/* TQM8548 */
 	/*
 	 * TLB 7:       64M     Non-cacheable, guarded
 	 * 0xa000_0000  1M      CCSRBAR
 	 * 0xa200_0000  16M     PCI1 IO
-	 * 0xa300_0000  16M     CAN
+	 * 0xa300_0000  16M     general IO (CAN, NAND-Flash
 	 */
 	.long TLB1_MAS0 (1, 7, 0)
 	.long TLB1_MAS1 (1, 1, 0, 0, BOOKE_PAGESZ_64M)
@@ -197,6 +212,18 @@ tlb1_entry:
 			 0, 0, 0, 0, 1, 0, 1, 0)
 	.long TLB1_MAS3 (E500_TLB_RPN (CFG_DDR_SDRAM_BASE + 0x10000000),
 			 0, 0, 0, 0, 0, 1, 0, 1, 0, 1)
+#if defined(CONFIG_TQM8548)
+	/*
+	 * TLB 10:      16M     Non-cacheable, guarded
+	 * 0xaf00_0000  16M     PCI express IO
+	 */
+	.long TLB1_MAS0 (1, 10, 0)
+	.long TLB1_MAS1 (1, 1, 0, 0, BOOKE_PAGESZ_16M)
+	.long TLB1_MAS2 (E500_TLB_EPN (CFG_PEX1_IO_BASE),
+			 0, 0, 0, 0, 1, 0, 1, 0)
+	.long TLB1_MAS3 (E500_TLB_RPN (CFG_PEX1_IO_BASE),
+			 0, 0, 0, 0, 0, 1, 0, 1, 0, 1)
+#endif				/* TQM8548 */
 	entry_end
 
 /*
@@ -206,8 +233,9 @@ tlb1_entry:
  * 0x8000_0000	   0x9fff_ffff	   PCI1 MEM		   512M
  * 0xa000_0000	   0xa00f_ffff	   CCSR			   1M
  * 0xa200_0000	   0xa2ff_ffff	   PCI1 IO		   16M
- * 0xa300_0000	   0xa3ff_ffff	   CAN			   16M
- * 0xb000_0000	   0xbfff_ffff	   RapidIO		   256M
+ * 0xa300_0000	   0xa3ff_ffff	   CAN, NAND-Flash	   16M
+ * 0xaf00_0000	   0xafff_ffff	   PCI express IO	   16M
+ * 0xb000_0000	   0xbfff_ffff	   RapidIO or PCI express  256M
  * 0xc000_0000	   0xffff_ffff	   FLASH		   1G
  *
  * Notes:
@@ -220,24 +248,46 @@ tlb1_entry:
 #define LAWAR1	(LAWAR_EN | LAWAR_TRGT_IF_PCIX | (LAWAR_SIZE & LAWAR_SIZE_512M))
 #define LAWBAR2 ((CFG_LBC_FLASH_BASE>>12) & 0xfffff)
 #define LAWAR2	(LAWAR_EN | LAWAR_TRGT_IF_LBC | (LAWAR_SIZE & LAWAR_SIZE_1G))
+/*
+ * PCI1 IO at 0xa2000_0000 for 16 M
+ */
 #define LAWBAR3 ((CFG_PCI1_IO_BASE>>12) & 0xfffff)
 #define LAWAR3	(LAWAR_EN | LAWAR_TRGT_IF_PCIX | (LAWAR_SIZE & LAWAR_SIZE_16M))
+#ifdef CONFIG_TQM8548		/* no RIO on TQM8548 */
+#define LAWBAR4 ((CFG_PEX1_MEM_BASE>>12) & 0xfffff)
+#define LAWAR4	(LAWAR_EN | LAWAR_TRGT_IF_PEX | (LAWAR_SIZE & LAWAR_SIZE_256M))
+#else
 /*
- * Rapid IO at 0xb000_0000 for 512 M
+ * Rapid IO at 0xb000_0000 for 256 M
  */
 #define LAWBAR4 ((CFG_RIO_MEM_BASE>>12) & 0xfffff)
 #define LAWAR4	(LAWAR_EN | LAWAR_TRGT_IF_RIO | (LAWAR_SIZE & LAWAR_SIZE_256M))
+#endif
 /*
- * CAN at 0xa300_0000 for 16 M
+ * CAN, NAND-Flash at 0xa300_0000 for 16 M
  */
 #define LAWBAR5 ((CFG_CAN_BASE>>12) & 0xfffff)
 #define LAWAR5	(LAWAR_EN | LAWAR_TRGT_IF_LBC | (LAWAR_SIZE & LAWAR_SIZE_16M))
 
+#ifdef CONFIG_TQM8548
+/*
+ * PEX1 IO at 0xa4000_0000 for 16 M
+ */
+#define LAWBAR6 ((CFG_PEX1_IO_BASE>>12) & 0xfffff)
+#define LAWAR6	(LAWAR_EN | LAWAR_TRGT_IF_PEX | (LAWAR_SIZE & LAWAR_SIZE_16M))
+#endif
+
 	.section .bootpg, "ax"
-	.globl	law_entry
+	.globl law_entry
 law_entry:
 	entry_start
+#if defined(CONFIG_TQM8548)
+	.long 0x07
+	.long LAWBAR0, LAWAR0, LAWBAR1, LAWAR1, LAWBAR2, LAWAR2, LAWBAR3, LAWAR3
+	.long LAWBAR4, LAWAR4, LAWBAR5, LAWAR5, LAWBAR6, LAWAR6
+#else
 	.long 0x06
 	.long LAWBAR0, LAWAR0, LAWBAR1, LAWAR1, LAWBAR2, LAWAR2, LAWBAR3, LAWAR3
 	.long LAWBAR4, LAWAR4, LAWBAR5, LAWAR5
+#endif
 	entry_end

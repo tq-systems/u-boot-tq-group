@@ -1,0 +1,716 @@
+
+This file contains basic information on the port of U-Boot to TQM8548.
+All the changes fit in the common U-Boot infrastructure, providing a
+new TQM8548-specific entry in makefiles. To build U-Boot for TQM8548,
+type "make TQM8548_config", edit the "include/configs/TQM85xx.h" file
+if necessary, then type "make" or "./MAKEALL TQM8548".
+
+Supported hardware features:
+----------------------------
+- TQM8548 with MPC8548 Rev 2.x processor
+- Board initialization
+- Serial console on UART1 or UART2
+- Triple speed (10/100/1000 MBit/s) ethernet device on TSEC1 or TSEC2
+  or TSEC3 or TSEC4
+- NAND FLASH access (read/write/erase)
+- EEPROM read/write
+- Temperature sensor read
+- PCI configuration read
+- Intel PRO/100 PCI ethernet card as boot device
+
+
+Unsupported hardware features:
+------------------------------
+- PCI express interface
+
+
+All named features are tested using a TQM8548 with STK85XX and STK85XX-IOA.
+
+Any features not mentioned here are not explicitely tested.
+They may work but you use it on your own risk!
+
+
+Common file modifications:
+--------------------------
+
+The following common files have been modified by this project:
+(starting from u-boot-1.4/ directory)
+
+MAKEALL			  - TQM8548 entry added
+Makefile		  - TQM8548_config entry added
+board/tqm85xx/init.S	  - new TLB and LAW entry for PEX
+			  - PEX memory window replaces RIO
+			  - I/O space (TLB7) now 256 MiB
+board/tqm85xx/sdram.c	  - Initialisation for DDR2 SDRAM added
+board/tqm85xx/tqm85xx.c	  - local bus clock init for mpc8548 added
+cpu/mpc85xx/speed.c	  - additional cpu/bus clock divisors for mpc8548
+drivers/ps2ser.c	  - MPC8548 added
+include/common.h          - prototypes added
+include/asm-ppc/mmu.h	  - PCI express LAW target define added
+include/configs/TQM85xx.h - TQM8548 added
+include/mpc85xx.h	  - new defines added
+
+New files:
+----------
+
+The following new files have been added by this project:
+(starting from u-boot-1.4/ directory)
+
+doc/README.TQM8548	  - this file
+
+
+New configuration options:
+--------------------------
+
+CONFIG_TQM8548
+
+	Main board-specific option (should be defined for TQM8548).
+
+CONFIG_MPC85XX_TSEC3
+CONFIG_MPC85XX_TSEC3_NAME
+CONFIG_MPC85XX_TSEC4
+CONFIG_MPC85XX_TSEC4_NAME
+TSEC3_PHY_ADDR
+TSEC4_PHY_ADDR
+TSEC3_PHYIDX
+TSEC4_PHYIDX
+CONFIG_HAS_ETH3
+CONFIG_HAS_ETH4
+
+	TQM8548 specific options for TSEC3/4
+
+CFG_PEX1_MEM_BASE
+CFG_PEX1_MEM_PHYS
+CFG_PEX1_MEM_SIZE
+CFG_PEX1_IO_BASE
+CFG_PEX1_IO_PHYS
+CFG_PEX1_IO_SIZE
+
+	PCI express specific options (necessary for Linux)
+
+
+Acceptance criteria tests:
+--------------------------
+
+The following tests have been conducted to validate the port of U-Boot
+to TQM8548:
+
+1. Operation on serial console:
+
+With default settings in TQM85xx.h, the U-Boot output appears on the serial
+terminal connected to COM1 as follows:
+
+------------------------------------------------------------------------------
+
+U-Boot 1.3.0-rc1-g83fea626 (Oct  1 2007 - 13:31:38)
+
+CPU:   8548_E, Version: 1.1, (0x80390011)
+Core:  E500, Version: 1.0, (0x80210010)
+Clock Configuration:
+       CPU:1199 MHz, CCB: 399 MHz,
+       DDR: 199 MHz, LBC:  24 MHz
+L1:    D-cache 32 kB enabled
+       I-cache 32 kB enabled
+Board: TQM8548
+PCI1:  32 bit, 33 MHz (compiled)
+I2C:   ready
+DTT:   1 is 35 C
+DRAM:  128 MB (CL=3)
+FLASH: 256 MB
+L2 cache 512KB: enabled
+In:    serial
+Out:   serial
+Err:   serial
+Net:   TSEC0, TSEC1
+PS/2:  No device found
+Kbd:   reset failed, no ACK
+
+Type "run flash_nfs" to mount root filesystem over NFS
+
+Hit any key to stop autoboot:  0
+=>
+=> help
+?       - alias for 'help'
+autoscr - run script from memory
+base    - print or set address offset
+bdinfo  - print Board Info structure
+boot    - boot default, i.e., run 'bootcmd'
+bootd   - boot default, i.e., run 'bootcmd'
+bootm   - boot application image from memory
+bootp   - boot image via network using BootP/TFTP protocol
+cmp     - memory compare
+coninfo - print console devices and information
+cp      - memory copy
+crc32   - checksum calculation
+date    - get/set/reset date & time
+dhcp    - invoke DHCP client to obtain IP/boot params
+dtt     - Digital Thermometer and Themostat
+echo    - echo args to console
+eeprom  - EEPROM sub-system
+erase   - erase FLASH memory
+exit    - exit script
+flinfo  - print FLASH memory information
+go      - start application at address 'addr'
+help    - print online help
+icrc32  - checksum calculation
+iloop   - infinite loop on address range
+imd     - i2c memory display
+iminfo  - print header information for application image
+imls    - list all images found in flash
+imm     - i2c memory modify (auto-incrementing)
+imw     - memory write (fill)
+inm     - memory modify (constant address)
+iprobe  - probe to discover valid I2C chip addresses
+itest   - return true/false on integer compare
+loadb   - load binary file over serial line (kermit mode)
+loads   - load S-Record file over serial line
+loady   - load binary file over serial line (ymodem mode)
+loop    - infinite loop on address range
+md      - memory display
+mii     - MII utility commands
+mm      - memory modify (auto-incrementing)
+mtest   - simple RAM test
+mw      - memory write (fill)
+nfs     - boot image via network using NFS protocol
+nm      - memory modify (constant address)
+pci     - list and access PCI Configuration Space
+ping    - send ICMP ECHO_REQUEST to network host
+printenv- print environment variables
+protect - enable or disable FLASH write protection
+rarpboot- boot image via network using RARP/TFTP protocol
+reset   - Perform RESET of the CPU
+run     - run commands in an environment variable
+saveenv - save environment variables to persistent storage
+setenv  - set environment variables
+sleep   - delay execution for some time
+sntp    - synchronize RTC via network
+test    - minimal test like /bin/sh
+tftpboot- boot image via network using TFTP protocol
+version - print monitor version
+=>
+------------------------------------------------------------------------------
+
+
+2. Flash driver operation
+
+The following sequence was performed to test the "flinfo" command:
+
+------------------------------------------------------------------------------
+=> flinfo
+
+Bank # 1: CFI conformant FLASH (32 x 16)  Size: 128 MB in 512 Sectors
+  AMD Standard command set, Manufacturer ID: 0x01, Device ID: 0x7E2301
+  Erase timeout: 16384 ms, write timeout: 2 ms
+  Buffer write timeout: 5 ms, buffer size: 32 bytes
+
+  Sector Start Addresses:
+  F0000000        F0040000        F0080000        F00C0000        F0100000
+  F0140000 E      F0180000 E      F01C0000 E      F0200000 E      F0240000 E
+  F0280000 E      F02C0000 E      F0300000 E      F0340000 E      F0380000 E
+  F03C0000 E      F0400000 E      F0440000 E      F0480000 E      F04C0000 E
+  F0500000 E      F0540000 E      F0580000 E      F05C0000 E      F0600000 E
+  F0640000 E      F0680000 E      F06C0000 E      F0700000 E      F0740000 E
+  F0780000 E      F07C0000 E      F0800000 E      F0840000 E      F0880000 E
+  F08C0000 E      F0900000 E      F0940000 E      F0980000 E      F09C0000 E
+  F0A00000 E      F0A40000 E      F0A80000 E      F0AC0000 E      F0B00000 E
+  F0B40000 E      F0B80000 E      F0BC0000 E      F0C00000 E      F0C40000 E
+  F0C80000 E      F0CC0000 E      F0D00000 E      F0D40000 E      F0D80000 E
+  F0DC0000 E      F0E00000 E      F0E40000 E      F0E80000 E      F0EC0000 E
+  F0F00000 E      F0F40000 E      F0F80000 E      F0FC0000 E      F1000000 E
+  F1040000 E      F1080000 E      F10C0000 E      F1100000 E      F1140000 E
+  F1180000 E      F11C0000 E      F1200000 E      F1240000 E      F1280000 E
+  F12C0000 E      F1300000 E      F1340000 E      F1380000 E      F13C0000 E
+  F1400000 E      F1440000 E      F1480000 E      F14C0000 E      F1500000 E
+  F1540000 E      F1580000 E      F15C0000 E      F1600000 E      F1640000 E
+  F1680000 E      F16C0000 E      F1700000 E      F1740000 E      F1780000 E
+  F17C0000 E      F1800000 E      F1840000 E      F1880000 E      F18C0000 E
+  F1900000 E      F1940000 E      F1980000 E      F19C0000 E      F1A00000 E
+  F1A40000 E      F1A80000 E      F1AC0000 E      F1B00000 E      F1B40000 E
+  F1B80000 E      F1BC0000 E      F1C00000 E      F1C40000 E      F1C80000 E
+  F1CC0000 E      F1D00000 E      F1D40000 E      F1D80000 E      F1DC0000 E
+  F1E00000 E      F1E40000 E      F1E80000 E      F1EC0000 E      F1F00000 E
+  F1F40000 E      F1F80000 E      F1FC0000 E      F2000000 E      F2040000 E
+  F2080000 E      F20C0000 E      F2100000 E      F2140000 E      F2180000 E
+  F21C0000 E      F2200000 E      F2240000 E      F2280000 E      F22C0000 E
+  F2300000 E      F2340000 E      F2380000 E      F23C0000 E      F2400000 E
+  F2440000 E      F2480000 E      F24C0000 E      F2500000 E      F2540000 E
+  F2580000 E      F25C0000 E      F2600000 E      F2640000 E      F2680000 E
+  F26C0000 E      F2700000 E      F2740000 E      F2780000 E      F27C0000 E
+  F2800000 E      F2840000 E      F2880000 E      F28C0000 E      F2900000 E
+  F2940000 E      F2980000 E      F29C0000 E      F2A00000 E      F2A40000 E
+  F2A80000 E      F2AC0000 E      F2B00000 E      F2B40000 E      F2B80000 E
+  F2BC0000 E      F2C00000 E      F2C40000 E      F2C80000 E      F2CC0000 E
+  F2D00000 E      F2D40000 E      F2D80000 E      F2DC0000 E      F2E00000 E
+  F2E40000 E      F2E80000 E      F2EC0000 E      F2F00000 E      F2F40000 E
+  F2F80000 E      F2FC0000 E      F3000000 E      F3040000 E      F3080000 E
+  F30C0000 E      F3100000 E      F3140000 E      F3180000 E      F31C0000 E
+  F3200000 E      F3240000 E      F3280000 E      F32C0000 E      F3300000 E
+  F3340000 E      F3380000 E      F33C0000 E      F3400000 E      F3440000 E
+  F3480000 E      F34C0000 E      F3500000 E      F3540000 E      F3580000 E
+  F35C0000 E      F3600000 E      F3640000 E      F3680000 E      F36C0000 E
+  F3700000 E      F3740000 E      F3780000 E      F37C0000 E      F3800000 E
+  F3840000 E      F3880000 E      F38C0000 E      F3900000 E      F3940000 E
+  F3980000 E      F39C0000 E      F3A00000 E      F3A40000 E      F3A80000 E
+  F3AC0000 E      F3B00000 E      F3B40000 E      F3B80000 E      F3BC0000 E
+  F3C00000 E      F3C40000 E      F3C80000 E      F3CC0000 E      F3D00000 E
+  F3D40000 E      F3D80000 E      F3DC0000 E      F3E00000 E      F3E40000 E
+  F3E80000 E      F3EC0000 E      F3F00000 E      F3F40000 E      F3F80000 E
+  F3FC0000 E      F4000000 E      F4040000 E      F4080000 E      F40C0000 E
+  F4100000 E      F4140000 E      F4180000 E      F41C0000 E      F4200000 E
+  F4240000 E      F4280000 E      F42C0000 E      F4300000 E      F4340000 E
+  F4380000 E      F43C0000 E      F4400000 E      F4440000 E      F4480000 E
+  F44C0000 E      F4500000 E      F4540000 E      F4580000 E      F45C0000 E
+  F4600000 E      F4640000 E      F4680000 E      F46C0000 E      F4700000 E
+  F4740000 E      F4780000 E      F47C0000 E      F4800000 E      F4840000 E
+  F4880000 E      F48C0000 E      F4900000 E      F4940000 E      F4980000 E
+  F49C0000 E      F4A00000 E      F4A40000 E      F4A80000 E      F4AC0000 E
+  F4B00000 E      F4B40000 E      F4B80000 E      F4BC0000 E      F4C00000 E
+  F4C40000 E      F4C80000 E      F4CC0000 E      F4D00000 E      F4D40000 E
+  F4D80000 E      F4DC0000 E      F4E00000 E      F4E40000 E      F4E80000 E
+  F4EC0000 E      F4F00000 E      F4F40000 E      F4F80000 E      F4FC0000 E
+  F5000000 E      F5040000 E      F5080000 E      F50C0000 E      F5100000 E
+  F5140000 E      F5180000 E      F51C0000 E      F5200000 E      F5240000 E
+  F5280000 E      F52C0000 E      F5300000 E      F5340000 E      F5380000 E
+  F53C0000 E      F5400000 E      F5440000 E      F5480000 E      F54C0000 E
+  F5500000 E      F5540000 E      F5580000 E      F55C0000 E      F5600000 E
+  F5640000 E      F5680000 E      F56C0000 E      F5700000 E      F5740000 E
+  F5780000 E      F57C0000 E      F5800000 E      F5840000 E      F5880000 E
+  F58C0000 E      F5900000 E      F5940000 E      F5980000 E      F59C0000 E
+  F5A00000 E      F5A40000 E      F5A80000 E      F5AC0000 E      F5B00000 E
+  F5B40000 E      F5B80000 E      F5BC0000 E      F5C00000 E      F5C40000 E
+  F5C80000 E      F5CC0000 E      F5D00000 E      F5D40000 E      F5D80000 E
+  F5DC0000 E      F5E00000 E      F5E40000 E      F5E80000 E      F5EC0000 E
+  F5F00000 E      F5F40000 E      F5F80000 E      F5FC0000 E      F6000000 E
+  F6040000 E      F6080000 E      F60C0000 E      F6100000 E      F6140000 E
+  F6180000 E      F61C0000 E      F6200000 E      F6240000 E      F6280000 E
+  F62C0000 E      F6300000 E      F6340000 E      F6380000 E      F63C0000 E
+  F6400000 E      F6440000 E      F6480000 E      F64C0000 E      F6500000 E
+  F6540000 E      F6580000 E      F65C0000 E      F6600000 E      F6640000 E
+  F6680000 E      F66C0000 E      F6700000 E      F6740000 E      F6780000 E
+  F67C0000 E      F6800000 E      F6840000 E      F6880000 E      F68C0000 E
+  F6900000 E      F6940000 E      F6980000 E      F69C0000 E      F6A00000 E
+  F6A40000 E      F6A80000 E      F6AC0000 E      F6B00000 E      F6B40000 E
+  F6B80000 E      F6BC0000 E      F6C00000 E      F6C40000 E      F6C80000 E
+  F6CC0000 E      F6D00000 E      F6D40000 E      F6D80000 E      F6DC0000 E
+  F6E00000 E      F6E40000 E      F6E80000 E      F6EC0000 E      F6F00000 E
+  F6F40000 E      F6F80000 E      F6FC0000 E      F7000000 E      F7040000 E
+  F7080000 E      F70C0000 E      F7100000 E      F7140000 E      F7180000 E
+  F71C0000 E      F7200000 E      F7240000 E      F7280000 E      F72C0000 E
+  F7300000 E      F7340000 E      F7380000 E      F73C0000 E      F7400000 E
+  F7440000 E      F7480000 E      F74C0000 E      F7500000 E      F7540000 E
+  F7580000 E      F75C0000 E      F7600000 E      F7640000 E      F7680000 E
+  F76C0000 E      F7700000 E      F7740000 E      F7780000 E      F77C0000 E
+  F7800000 E      F7840000 E      F7880000 E      F78C0000 E      F7900000 E
+  F7940000 E      F7980000 E      F79C0000 E      F7A00000 E      F7A40000 E
+  F7A80000 E      F7AC0000 E      F7B00000 E      F7B40000 E      F7B80000 E
+  F7BC0000 E      F7C00000 E      F7C40000 E      F7C80000 E      F7CC0000 E
+  F7D00000 E      F7D40000 E      F7D80000 E      F7DC0000 E      F7E00000 E
+  F7E40000 E      F7E80000 E      F7EC0000 E      F7F00000 E      F7F40000 E
+  F7F80000 E      F7FC0000 E
+
+Bank # 2: CFI conformant FLASH (32 x 16)  Size: 128 MB in 512 Sectors
+  AMD Standard command set, Manufacturer ID: 0x01, Device ID: 0x7E2301
+  Erase timeout: 16384 ms, write timeout: 2 ms
+  Buffer write timeout: 5 ms, buffer size: 32 bytes
+
+  Sector Start Addresses:
+  F8000000 E      F8040000 E      F8080000 E      F80C0000 E      F8100000 E
+  F8140000 E      F8180000 E      F81C0000 E      F8200000 E      F8240000 E
+  F8280000 E      F82C0000 E      F8300000 E      F8340000 E      F8380000 E
+  F83C0000 E      F8400000 E      F8440000 E      F8480000 E      F84C0000 E
+  F8500000 E      F8540000 E      F8580000 E      F85C0000 E      F8600000 E
+  F8640000 E      F8680000 E      F86C0000 E      F8700000 E      F8740000 E
+  F8780000 E      F87C0000 E      F8800000 E      F8840000 E      F8880000 E
+  F88C0000 E      F8900000 E      F8940000 E      F8980000 E      F89C0000 E
+  F8A00000 E      F8A40000 E      F8A80000 E      F8AC0000 E      F8B00000 E
+  F8B40000 E      F8B80000 E      F8BC0000 E      F8C00000 E      F8C40000 E
+  F8C80000 E      F8CC0000 E      F8D00000 E      F8D40000 E      F8D80000 E
+  F8DC0000 E      F8E00000 E      F8E40000 E      F8E80000 E      F8EC0000 E
+  F8F00000 E      F8F40000 E      F8F80000 E      F8FC0000 E      F9000000 E
+  F9040000 E      F9080000 E      F90C0000 E      F9100000 E      F9140000 E
+  F9180000 E      F91C0000 E      F9200000 E      F9240000 E      F9280000 E
+  F92C0000 E      F9300000 E      F9340000 E      F9380000 E      F93C0000 E
+  F9400000 E      F9440000 E      F9480000 E      F94C0000 E      F9500000 E
+  F9540000 E      F9580000 E      F95C0000 E      F9600000 E      F9640000 E
+  F9680000 E      F96C0000 E      F9700000 E      F9740000 E      F9780000 E
+  F97C0000 E      F9800000 E      F9840000 E      F9880000 E      F98C0000 E
+  F9900000 E      F9940000 E      F9980000 E      F99C0000 E      F9A00000 E
+  F9A40000 E      F9A80000 E      F9AC0000 E      F9B00000 E      F9B40000 E
+  F9B80000 E      F9BC0000 E      F9C00000 E      F9C40000 E      F9C80000 E
+  F9CC0000 E      F9D00000 E      F9D40000 E      F9D80000 E      F9DC0000 E
+  F9E00000 E      F9E40000 E      F9E80000 E      F9EC0000 E      F9F00000 E
+  F9F40000 E      F9F80000 E      F9FC0000 E      FA000000 E      FA040000 E
+  FA080000 E      FA0C0000 E      FA100000 E      FA140000 E      FA180000 E
+  FA1C0000 E      FA200000 E      FA240000 E      FA280000 E      FA2C0000 E
+  FA300000 E      FA340000 E      FA380000 E      FA3C0000 E      FA400000 E
+  FA440000 E      FA480000 E      FA4C0000 E      FA500000 E      FA540000 E
+  FA580000 E      FA5C0000 E      FA600000 E      FA640000 E      FA680000 E
+  FA6C0000 E      FA700000 E      FA740000 E      FA780000 E      FA7C0000 E
+  FA800000 E      FA840000 E      FA880000 E      FA8C0000 E      FA900000 E
+  FA940000 E      FA980000 E      FA9C0000 E      FAA00000 E      FAA40000 E
+  FAA80000 E      FAAC0000 E      FAB00000 E      FAB40000 E      FAB80000 E
+  FABC0000 E      FAC00000 E      FAC40000 E      FAC80000 E      FACC0000 E
+  FAD00000 E      FAD40000 E      FAD80000 E      FADC0000 E      FAE00000 E
+  FAE40000 E      FAE80000 E      FAEC0000 E      FAF00000 E      FAF40000 E
+  FAF80000 E      FAFC0000 E      FB000000 E      FB040000 E      FB080000 E
+  FB0C0000 E      FB100000 E      FB140000 E      FB180000 E      FB1C0000 E
+  FB200000 E      FB240000 E      FB280000 E      FB2C0000 E      FB300000 E
+  FB340000 E      FB380000 E      FB3C0000 E      FB400000 E      FB440000 E
+  FB480000 E      FB4C0000 E      FB500000 E      FB540000 E      FB580000 E
+  FB5C0000 E      FB600000 E      FB640000 E      FB680000 E      FB6C0000 E
+  FB700000 E      FB740000 E      FB780000 E      FB7C0000 E      FB800000 E
+  FB840000 E      FB880000 E      FB8C0000 E      FB900000 E      FB940000 E
+  FB980000 E      FB9C0000 E      FBA00000 E      FBA40000 E      FBA80000 E
+  FBAC0000 E      FBB00000 E      FBB40000 E      FBB80000 E      FBBC0000 E
+  FBC00000 E      FBC40000 E      FBC80000 E      FBCC0000 E      FBD00000 E
+  FBD40000 E      FBD80000 E      FBDC0000 E      FBE00000 E      FBE40000 E
+  FBE80000 E      FBEC0000 E      FBF00000 E      FBF40000 E      FBF80000 E
+  FBFC0000 E      FC000000 E      FC040000 E      FC080000 E      FC0C0000 E
+  FC100000 E      FC140000 E      FC180000 E      FC1C0000 E      FC200000 E
+  FC240000 E      FC280000 E      FC2C0000 E      FC300000 E      FC340000 E
+  FC380000 E      FC3C0000 E      FC400000 E      FC440000 E      FC480000 E
+  FC4C0000 E      FC500000 E      FC540000 E      FC580000 E      FC5C0000 E
+  FC600000 E      FC640000 E      FC680000 E      FC6C0000 E      FC700000 E
+  FC740000 E      FC780000 E      FC7C0000 E      FC800000 E      FC840000 E
+  FC880000 E      FC8C0000 E      FC900000 E      FC940000 E      FC980000 E
+  FC9C0000 E      FCA00000 E      FCA40000 E      FCA80000 E      FCAC0000 E
+  FCB00000 E      FCB40000 E      FCB80000 E      FCBC0000 E      FCC00000 E
+  FCC40000 E      FCC80000 E      FCCC0000 E      FCD00000 E      FCD40000 E
+  FCD80000 E      FCDC0000 E      FCE00000 E      FCE40000 E      FCE80000 E
+  FCEC0000 E      FCF00000 E      FCF40000 E      FCF80000 E      FCFC0000 E
+  FD000000 E      FD040000 E      FD080000 E      FD0C0000 E      FD100000 E
+  FD140000 E      FD180000 E      FD1C0000 E      FD200000 E      FD240000 E
+  FD280000 E      FD2C0000 E      FD300000 E      FD340000 E      FD380000 E
+  FD3C0000 E      FD400000 E      FD440000 E      FD480000 E      FD4C0000 E
+  FD500000 E      FD540000 E      FD580000 E      FD5C0000 E      FD600000 E
+  FD640000 E      FD680000 E      FD6C0000 E      FD700000 E      FD740000 E
+  FD780000 E      FD7C0000 E      FD800000 E      FD840000 E      FD880000 E
+  FD8C0000 E      FD900000 E      FD940000 E      FD980000 E      FD9C0000 E
+  FDA00000 E      FDA40000 E      FDA80000 E      FDAC0000 E      FDB00000 E
+  FDB40000 E      FDB80000 E      FDBC0000 E      FDC00000 E      FDC40000 E
+  FDC80000 E      FDCC0000 E      FDD00000 E      FDD40000 E      FDD80000 E
+  FDDC0000 E      FDE00000 E      FDE40000 E      FDE80000 E      FDEC0000 E
+  FDF00000 E      FDF40000 E      FDF80000 E      FDFC0000 E      FE000000
+  FE040000        FE080000        FE0C0000        FE100000        FE140000 E
+  FE180000        FE1C0000        FE200000        FE240000        FE280000
+  FE2C0000        FE300000 E      FE340000 E      FE380000 E      FE3C0000 E
+  FE400000 E      FE440000 E      FE480000 E      FE4C0000 E      FE500000 E
+  FE540000 E      FE580000 E      FE5C0000 E      FE600000 E      FE640000 E
+  FE680000 E      FE6C0000 E      FE700000 E      FE740000 E      FE780000 E
+  FE7C0000 E      FE800000 E      FE840000 E      FE880000 E      FE8C0000 E
+  FE900000 E      FE940000 E      FE980000 E      FE9C0000 E      FEA00000 E
+  FEA40000 E      FEA80000 E      FEAC0000 E      FEB00000 E      FEB40000 E
+  FEB80000 E      FEBC0000 E      FEC00000 E      FEC40000 E      FEC80000 E
+  FECC0000 E      FED00000 E      FED40000 E      FED80000 E      FEDC0000 E
+  FEE00000 E      FEE40000 E      FEE80000 E      FEEC0000 E      FEF00000 E
+  FEF40000 E      FEF80000 E      FEFC0000 E      FF000000 E      FF040000 E
+  FF080000 E      FF0C0000 E      FF100000 E      FF140000 E      FF180000 E
+  FF1C0000 E      FF200000 E      FF240000 E      FF280000 E      FF2C0000 E
+  FF300000 E      FF340000 E      FF380000 E      FF3C0000 E      FF400000 E
+  FF440000 E      FF480000 E      FF4C0000 E      FF500000 E      FF540000 E
+  FF580000 E      FF5C0000 E      FF600000 E      FF640000 E      FF680000 E
+  FF6C0000 E      FF700000 E      FF740000 E      FF780000 E      FF7C0000 E
+  FF800000 E      FF840000 E      FF880000 E      FF8C0000 E      FF900000 E
+  FF940000 E      FF980000 E      FF9C0000 E      FFA00000 E      FFA40000 E
+  FFA80000 E      FFAC0000 E      FFB00000 E      FFB40000 E      FFB80000 E
+  FFBC0000 E      FFC00000 E      FFC40000 E      FFC80000 E      FFCC0000 E
+  FFD00000 E      FFD40000 E      FFD80000 E      FFDC0000 E      FFE00000 E
+  FFE40000 E      FFE80000 E      FFEC0000 E      FFF00000 E      FFF40000   RO
+  FFF80000   RO   FFFC0000   RO
+=>
+------------------------------------------------------------------------------
+
+
+The following sequence was performed to test the erase command:
+
+------------------------------------------------------------------------------
+=> cp 0 f0100000 10
+Copy to Flash... done
+=> erase f0100000 f013ffff
+
+. done
+Erased 1 sectors
+=> md f0100000
+f0100000: ffffffff ffffffff ffffffff ffffffff    ................
+f0100010: ffffffff ffffffff ffffffff ffffffff    ................
+f0100020: ffffffff ffffffff ffffffff ffffffff    ................
+f0100030: ffffffff ffffffff ffffffff ffffffff    ................
+f0100040: ffffffff ffffffff ffffffff ffffffff    ................
+f0100050: ffffffff ffffffff ffffffff ffffffff    ................
+f0100060: ffffffff ffffffff ffffffff ffffffff    ................
+f0100070: ffffffff ffffffff ffffffff ffffffff    ................
+f0100080: ffffffff ffffffff ffffffff ffffffff    ................
+f0100090: ffffffff ffffffff ffffffff ffffffff    ................
+f01000a0: ffffffff ffffffff ffffffff ffffffff    ................
+f01000b0: ffffffff ffffffff ffffffff ffffffff    ................
+f01000c0: ffffffff ffffffff ffffffff ffffffff    ................
+f01000d0: ffffffff ffffffff ffffffff ffffffff    ................
+f01000e0: ffffffff ffffffff ffffffff ffffffff    ................
+f01000f0: ffffffff ffffffff ffffffff ffffffff    ................
+=> cp 0 f0100000 10
+Copy to Flash... done
+=> erase 1:4
+Erase Flash Sectors 4-4 in Bank # 1
+. done
+=> md f0100000
+f0100000: ffffffff ffffffff ffffffff ffffffff    ................
+f0100010: ffffffff ffffffff ffffffff ffffffff    ................
+f0100020: ffffffff ffffffff ffffffff ffffffff    ................
+f0100030: ffffffff ffffffff ffffffff ffffffff    ................
+f0100040: ffffffff ffffffff ffffffff ffffffff    ................
+f0100050: ffffffff ffffffff ffffffff ffffffff    ................
+f0100060: ffffffff ffffffff ffffffff ffffffff    ................
+f0100070: ffffffff ffffffff ffffffff ffffffff    ................
+f0100080: ffffffff ffffffff ffffffff ffffffff    ................
+f0100090: ffffffff ffffffff ffffffff ffffffff    ................
+f01000a0: ffffffff ffffffff ffffffff ffffffff    ................
+f01000b0: ffffffff ffffffff ffffffff ffffffff    ................
+f01000c0: ffffffff ffffffff ffffffff ffffffff    ................
+f01000d0: ffffffff ffffffff ffffffff ffffffff    ................
+f01000e0: ffffffff ffffffff ffffffff ffffffff    ................
+f01000f0: ffffffff ffffffff ffffffff ffffffff    ................
+=> cp 0 f0100000 10
+Copy to Flash... done
+=> cp 0 f0140000 10
+Copy to Flash... done
+=> erase 1:4-5
+Erase Flash Sectors 4-5 in Bank # 1
+.. done
+=> md f0100000
+f0100000: ffffffff ffffffff ffffffff ffffffff    ................
+f0100010: ffffffff ffffffff ffffffff ffffffff    ................
+f0100020: ffffffff ffffffff ffffffff ffffffff    ................
+f0100030: ffffffff ffffffff ffffffff ffffffff    ................
+f0100040: ffffffff ffffffff ffffffff ffffffff    ................
+f0100050: ffffffff ffffffff ffffffff ffffffff    ................
+f0100060: ffffffff ffffffff ffffffff ffffffff    ................
+f0100070: ffffffff ffffffff ffffffff ffffffff    ................
+f0100080: ffffffff ffffffff ffffffff ffffffff    ................
+f0100090: ffffffff ffffffff ffffffff ffffffff    ................
+f01000a0: ffffffff ffffffff ffffffff ffffffff    ................
+f01000b0: ffffffff ffffffff ffffffff ffffffff    ................
+f01000c0: ffffffff ffffffff ffffffff ffffffff    ................
+f01000d0: ffffffff ffffffff ffffffff ffffffff    ................
+f01000e0: ffffffff ffffffff ffffffff ffffffff    ................
+f01000f0: ffffffff ffffffff ffffffff ffffffff    ................
+=> md f0140000
+f0140000: ffffffff ffffffff ffffffff ffffffff    ................
+f0140010: ffffffff ffffffff ffffffff ffffffff    ................
+f0140020: ffffffff ffffffff ffffffff ffffffff    ................
+f0140030: ffffffff ffffffff ffffffff ffffffff    ................
+f0140040: ffffffff ffffffff ffffffff ffffffff    ................
+f0140050: ffffffff ffffffff ffffffff ffffffff    ................
+f0140060: ffffffff ffffffff ffffffff ffffffff    ................
+f0140070: ffffffff ffffffff ffffffff ffffffff    ................
+f0140080: ffffffff ffffffff ffffffff ffffffff    ................
+f0140090: ffffffff ffffffff ffffffff ffffffff    ................
+f01400a0: ffffffff ffffffff ffffffff ffffffff    ................
+f01400b0: ffffffff ffffffff ffffffff ffffffff    ................
+f01400c0: ffffffff ffffffff ffffffff ffffffff    ................
+f01400d0: ffffffff ffffffff ffffffff ffffffff    ................
+f01400e0: ffffffff ffffffff ffffffff ffffffff    ................
+f01400f0: ffffffff ffffffff ffffffff ffffffff    ................
+
+
+=> cp 0 f8100000 10
+Copy to Flash... done
+=> erase f8100000 f813ffff
+
+. done
+Erased 1 sectors
+=> md f8100000
+f8100000: ffffffff ffffffff ffffffff ffffffff    ................
+f8100010: ffffffff ffffffff ffffffff ffffffff    ................
+f8100020: ffffffff ffffffff ffffffff ffffffff    ................
+f8100030: ffffffff ffffffff ffffffff ffffffff    ................
+f8100040: ffffffff ffffffff ffffffff ffffffff    ................
+f8100050: ffffffff ffffffff ffffffff ffffffff    ................
+f8100060: ffffffff ffffffff ffffffff ffffffff    ................
+f8100070: ffffffff ffffffff ffffffff ffffffff    ................
+f8100080: ffffffff ffffffff ffffffff ffffffff    ................
+f8100090: ffffffff ffffffff ffffffff ffffffff    ................
+f81000a0: ffffffff ffffffff ffffffff ffffffff    ................
+f81000b0: ffffffff ffffffff ffffffff ffffffff    ................
+f81000c0: ffffffff ffffffff ffffffff ffffffff    ................
+f81000d0: ffffffff ffffffff ffffffff ffffffff    ................
+f81000e0: ffffffff ffffffff ffffffff ffffffff    ................
+f81000f0: ffffffff ffffffff ffffffff ffffffff    ................
+=> cp 0 f8100000 10
+Copy to Flash... done
+=> erase 2:4
+Erase Flash Sectors 4-4 in Bank # 2
+. done
+=> md f8100000
+f8100000: ffffffff ffffffff ffffffff ffffffff    ................
+f8100010: ffffffff ffffffff ffffffff ffffffff    ................
+f8100020: ffffffff ffffffff ffffffff ffffffff    ................
+f8100030: ffffffff ffffffff ffffffff ffffffff    ................
+f8100040: ffffffff ffffffff ffffffff ffffffff    ................
+f8100050: ffffffff ffffffff ffffffff ffffffff    ................
+f8100060: ffffffff ffffffff ffffffff ffffffff    ................
+f8100070: ffffffff ffffffff ffffffff ffffffff    ................
+f8100080: ffffffff ffffffff ffffffff ffffffff    ................
+f8100090: ffffffff ffffffff ffffffff ffffffff    ................
+f81000a0: ffffffff ffffffff ffffffff ffffffff    ................
+f81000b0: ffffffff ffffffff ffffffff ffffffff    ................
+f81000c0: ffffffff ffffffff ffffffff ffffffff    ................
+f81000d0: ffffffff ffffffff ffffffff ffffffff    ................
+f81000e0: ffffffff ffffffff ffffffff ffffffff    ................
+f81000f0: ffffffff ffffffff ffffffff ffffffff    ................
+=> cp 0 f8100000 10
+Copy to Flash... done
+=> cp 0 f8140000 10
+Copy to Flash... done
+=> erase 2:4-5
+Erase Flash Sectors 4-5 in Bank # 2
+.. done
+=> md f8100000
+f8100000: ffffffff ffffffff ffffffff ffffffff    ................
+f8100010: ffffffff ffffffff ffffffff ffffffff    ................
+f8100020: ffffffff ffffffff ffffffff ffffffff    ................
+f8100030: ffffffff ffffffff ffffffff ffffffff    ................
+f8100040: ffffffff ffffffff ffffffff ffffffff    ................
+f8100050: ffffffff ffffffff ffffffff ffffffff    ................
+f8100060: ffffffff ffffffff ffffffff ffffffff    ................
+f8100070: ffffffff ffffffff ffffffff ffffffff    ................
+f8100080: ffffffff ffffffff ffffffff ffffffff    ................
+f8100090: ffffffff ffffffff ffffffff ffffffff    ................
+f81000a0: ffffffff ffffffff ffffffff ffffffff    ................
+f81000b0: ffffffff ffffffff ffffffff ffffffff    ................
+f81000c0: ffffffff ffffffff ffffffff ffffffff    ................
+f81000d0: ffffffff ffffffff ffffffff ffffffff    ................
+f81000e0: ffffffff ffffffff ffffffff ffffffff    ................
+f81000f0: ffffffff ffffffff ffffffff ffffffff    ................
+=> md f8140000
+f8140000: ffffffff ffffffff ffffffff ffffffff    ................
+f8140010: ffffffff ffffffff ffffffff ffffffff    ................
+f8140020: ffffffff ffffffff ffffffff ffffffff    ................
+f8140030: ffffffff ffffffff ffffffff ffffffff    ................
+f8140040: ffffffff ffffffff ffffffff ffffffff    ................
+f8140050: ffffffff ffffffff ffffffff ffffffff    ................
+f8140060: ffffffff ffffffff ffffffff ffffffff    ................
+f8140070: ffffffff ffffffff ffffffff ffffffff    ................
+f8140080: ffffffff ffffffff ffffffff ffffffff    ................
+f8140090: ffffffff ffffffff ffffffff ffffffff    ................
+f81400a0: ffffffff ffffffff ffffffff ffffffff    ................
+f81400b0: ffffffff ffffffff ffffffff ffffffff    ................
+f81400c0: ffffffff ffffffff ffffffff ffffffff    ................
+f81400d0: ffffffff ffffffff ffffffff ffffffff    ................
+f81400e0: ffffffff ffffffff ffffffff ffffffff    ................
+f81400f0: ffffffff ffffffff ffffffff ffffffff    ................
+=>
+
+------------------------------------------------------------------------------
+
+
+The following sequence was performed to test the Flash programming commands:
+
+------------------------------------------------------------------------------
+=> erase f0100000 f013ffff
+
+. done
+Erased 1 sectors
+=> cp 0 f0100000 10
+Copy to Flash... done
+=> cmp 0 f0100000 10
+Total of 16 words were the same
+=>
+------------------------------------------------------------------------------
+
+
+The following sequence was performed to test storage of the environment
+variables in Flash:
+
+------------------------------------------------------------------------------
+=> setenv foo bar
+=> saveenv
+Saving Environment to Flash...
+Un-Protected 1 sectors
+Un-Protected 1 sectors
+Erasing Flash...
+. done
+Erased 1 sectors
+Writing to Flash... done
+Protected 1 sectors
+Protected 1 sectors
+=> reset
+
+
+
+=> printenv
+baudrate=115200
+loads_echo=1
+preboot=echo;echo Type \"run flash_nfs\" to mount root filesystem over NFS;echo
+hostname=tqm8548
+loadaddr=200000
+netdev=eth0
+consdev=ttyS0
+nfsargs=setenv bootargs root=/dev/nfs rw nfsroot=$serverip:$rootpath
+ramargs=setenv bootargs root=/dev/ram rw
+addip=setenv bootargs $bootargs ip=$ipaddr:$serverip:$gatewayip:$netmask:$hostname:$netdev:off panic=1
+addcons=setenv bootargs $bootargs console=$consdev,$baudrate
+flash_nfs=run nfsargs addip addcons;bootm $kernel_addr
+flash_self=run ramargs addip addcons;bootm $kernel_addr $ramdisk_addr
+kernel_addr=FE000000
+ramdisk_addr=FE180000
+load=tftp 100000 /tftpboot/$hostname/u-boot.bin
+update=protect off fffc0000 ffffffff;era fffc0000 ffffffff;cp.b 100000 fffc0000 40000;setenv filesize;saveenv
+upd=run load;run update
+ethact=TSEC0
+ethaddr=00:d0:93:0f:c2:86
+rootpath=/opt/eldk4.0_ppc/ppc_85xx
+eth1addr=00:d0:93:0f:c2:87
+eth2addr=00:d0:93:0f:c2:88
+eth3addr=00:d0:93:0f:c2:89
+mtdids=nand0=TQM85xx-nand
+mtdparts=mtdparts=TQM85xx-nand:16M(Root_Disk)
+addmtd=setenv bootargs $bootargs $mtdparts
+net_nfs=tftp $loadaddr $bootfile;run nfsargs addip addcons addmtd;bootm
+partition=nand0,0
+bootargs=root=/dev/nfs rw nfsroot=172.20.1.31:/opt/eldk4.0_ppc/ppc_85xx ip=172.20.5.95:172.20.1.31::255.255.0.0:tqm8548:eth0:off panic=1 consol)
+net_nand=nand read.jffs2 ${loadaddr} 0 134F28; run nfsargs addip addcons addmtd;bootm
+bootdelay=5
+bootcmd=run net_nfs
+filesize=134F28
+fileaddr=200000
+netmask=255.255.0.0
+ipaddr=172.20.5.95
+serverip=172.20.1.31
+nand_boot=nboot ${loadaddr} 0 0; run nfsargs addip addcons addmtd;bootm
+bootfile=tqm85xx/uImage_tqm8548_thw
+foo=bar
+stdin=serial
+stdout=serial
+stderr=serial
+
+Environment size: 1714/8187 bytes
+=>
+------------------------------------------------------------------------------
+
+
+The following sequence was performed to test image download and run over
+Ethernet interface (both interfaces were tested):
+
+------------------------------------------------------------------------------
+=> tftpboot 40000 tqm85xx/hello_world.bin
+Speed: 100, full duplex
+Using TSEC0 device
+TFTP from server 172.20.1.31; our IP address is 172.20.5.95
+Filename 'tqm85xx/hello_world.bin'.
+Load address: 0x40000
+Loading: #############
+done
+Bytes transferred = 66340 (10324 hex)
+=> go 40004
+## Starting application at 0x00040004 ...
+Example expects ABI version 3
+Actual U-Boot ABI version 4
+Hello World
+argc = 1
+argv[0] = "40004"
+argv[1] = "<NULL>"
+Hit any key to exit ...
+
+## Application terminated, rc = 0x0
+=>
+
