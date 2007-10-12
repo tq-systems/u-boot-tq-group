@@ -37,6 +37,7 @@ static long int dram_size (long int, long int *, long int);
 
 #define	_NOT_USED_	0xFFFFFFFF
 
+/* UPM initialization table for SDRAM: 40, 50, 66 MHz CLKOUT @ CAS latency 2, tWR=2 */
 const uint sdram_table[] =
 {
 	/*
@@ -63,14 +64,14 @@ const uint sdram_table[] =
 	/*
 	 * Single Write. (Offset 18 in UPMA RAM)
 	 */
-	0x1F0DFC04, 0xEEABBC00, 0x01B27C04, 0x1FF5FC47, /* last */
-	_NOT_USED_, _NOT_USED_, _NOT_USED_, _NOT_USED_,
+	0x1F0DFC04, 0xEEABBC00, 0x11B77C04, 0xEFFAFC44,
+	0x1FF5FC47, /* last */
+		    _NOT_USED_, _NOT_USED_, _NOT_USED_,
 	/*
 	 * Burst Write. (Offset 20 in UPMA RAM)
 	 */
 	0x1F0DFC04, 0xEEABBC00, 0x10A77C00, 0xF0AFFC00,
-	0xF0AFFC00, 0xE1BAFC04, 0x1FF5FC47, /* last */
-					    _NOT_USED_,
+	0xF0AFFC00, 0xF0AFFC04, 0xE1BAFC44, 0x1FF5FC47, /* last */
 	_NOT_USED_, _NOT_USED_, _NOT_USED_, _NOT_USED_,
 	_NOT_USED_, _NOT_USED_, _NOT_USED_, _NOT_USED_,
 	/*
@@ -83,7 +84,7 @@ const uint sdram_table[] =
 	/*
 	 * Exception. (Offset 3c in UPMA RAM)
 	 */
-	0x7FFFFC07, /* last */
+	0xFFFFFC07, /* last */
 		    _NOT_USED_, _NOT_USED_, _NOT_USED_,
 };
 
@@ -183,7 +184,7 @@ long int initdram (int board_type)
 #ifndef	CONFIG_CAN_DRIVER
 	if ((board_type != 'L') &&
 	    (board_type != 'M') &&
-	    (board_type != 'D') ) {	/* "L" and "M" type boards have only one bank SDRAM */
+	    (board_type != 'D') ) {	/* only one SDRAM bank on L, M and D modules */
 		memctl->memc_or3 = CFG_OR3_PRELIM;
 		memctl->memc_br3 = CFG_BR3_PRELIM;
 	}
@@ -259,7 +260,7 @@ long int initdram (int board_type)
 #ifndef	CONFIG_CAN_DRIVER
 	if ((board_type != 'L') &&
 	    (board_type != 'M') &&
-	    (board_type != 'D') ) {	/* "L" and "M" type boards have only one bank SDRAM */
+	    (board_type != 'D') ) {	/* only one SDRAM bank on L, M and D modules */
 		/*
 		 * Check Bank 1 Memory Size
 		 * use current column settings
@@ -354,6 +355,8 @@ long int initdram (int board_type)
 	udelay (10000);
 
 #ifdef	CONFIG_CAN_DRIVER
+	/* UPM initialization for CAN @ CLKOUT <= 66 MHz */
+
 	/* Initialize OR3 / BR3 */
 	memctl->memc_or3 = CFG_OR3_CAN;
 	memctl->memc_br3 = CFG_BR3_CAN;
@@ -362,7 +365,7 @@ long int initdram (int board_type)
 	memctl->memc_mbmr = MBMR_GPL_B4DIS;	/* GPL_B4 ouput line Disable */
 
 	/* Initialize UPMB for CAN: single read */
-	memctl->memc_mdr = 0xFFFFC004;
+	memctl->memc_mdr = 0xFFFFCC04;
 	memctl->memc_mcr = 0x0100 | UPMB;
 
 	memctl->memc_mdr = 0x0FFFD004;
@@ -374,23 +377,23 @@ long int initdram (int board_type)
 	memctl->memc_mdr = 0x3FFFC004;
 	memctl->memc_mcr = 0x0103 | UPMB;
 
-	memctl->memc_mdr = 0xFFFFDC05;
+	memctl->memc_mdr = 0xFFFFDC07;
 	memctl->memc_mcr = 0x0104 | UPMB;
 
 	/* Initialize UPMB for CAN: single write */
-	memctl->memc_mdr = 0xFFFCC004;
+	memctl->memc_mdr = 0xFFFCCC04;
 	memctl->memc_mcr = 0x0118 | UPMB;
 
-	memctl->memc_mdr = 0xCFFCD004;
+	memctl->memc_mdr = 0xCFFCDC04;
 	memctl->memc_mcr = 0x0119 | UPMB;
 
-	memctl->memc_mdr = 0x0FFCC000;
+	memctl->memc_mdr = 0x3FFCC000;
 	memctl->memc_mcr = 0x011A | UPMB;
 
-	memctl->memc_mdr = 0x7FFCC004;
+	memctl->memc_mdr = 0xFFFCC004;
 	memctl->memc_mcr = 0x011B | UPMB;
 
-	memctl->memc_mdr = 0xFFFDCC05;
+	memctl->memc_mdr = 0xFFFDC405;
 	memctl->memc_mcr = 0x011C | UPMB;
 #endif							/* CONFIG_CAN_DRIVER */
 
