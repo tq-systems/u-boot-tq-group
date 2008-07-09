@@ -89,18 +89,21 @@
 #define CFG_FLASH_BASE			CS0_BASE
 
 /* Max number of memory banks */
-#define CFG_MAX_FLASH_BANKS		4
+#define CFG_MAX_FLASH_BANKS		5
 
 /*
  * Bank start addresses.
  * 4 x 32 MiB is the maximum for user and U-Boot code. Please adapt the list
  * as well as CFG_MAX_FLASH_BANKS to your TQM. Also consider dual die chips
  * or single die chips, e.g. one dual die chip represents two banks.
+ * The fifth bank is a separate chip for the FPGA configuration. It's
+ * controlled by chipselect 1.
  */
 #define CFG_FLASH_BANKS_LIST		{CFG_FLASH_BASE,			\
 					CFG_FLASH_BASE + 32 * 1024 * 1024,	\
 					CFG_FLASH_BASE + 64 * 1024 * 1024,	\
-					CFG_FLASH_BASE + 96 * 1024 * 1024}
+					CFG_FLASH_BASE + 96 * 1024 * 1024,	\
+					CS1_BASE}
 
 /* Max number of sectors on one chip */
 #define CFG_MAX_FLASH_SECT		259

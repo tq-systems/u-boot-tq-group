@@ -36,6 +36,12 @@ static void setup_chipselects (void)
 	__REG (CSCR_L(0)) = CSCR_L_OEA_10 | CSCR_L_EBWA_3 | CSCR_L_EBWN_3 \
 		| CSCR_L_EBC_ONLY_WA | CSCR_L_DSZ_16_MUM0 | CSCR_L_CSEN;
 
+	/* FPGA configuration flash on CS1 */
+	__REG (CSCR_U(1)) = CSCR_U_CNC_3 | CSCR_U_WSC_13 | CSCR_U_EDC_4;
+	__REG (CSCR_A(1)) = CSCR_A_RWA_2 | CSCR_A_RWN_2 | CSCR_A_LBN_2_MUM0;
+	__REG (CSCR_L(1)) = CSCR_L_OEA_10 | CSCR_L_EBWA_3 | CSCR_L_EBWN_3 \
+		| CSCR_L_EBC_ONLY_WA | CSCR_L_DSZ_16_MUM0 | CSCR_L_CSEN;
+
 	/* Ethernet controller on CS4 */
 	__REG (CSCR_U(4)) = CSCR_U_CNC_1 | CSCR_U_WSC_22 | CSCR_U_EDC_4;
 	__REG (CSCR_A(4)) = CSCR_A_RWA_2 | CSCR_A_RWN_15;
