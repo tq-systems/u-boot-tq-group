@@ -271,6 +271,7 @@
 		"console=ttymxc0,115200\0"				\
 	"bootargs_nfs=setenv bootargs ${bootargs} "			\
 		"root=/dev/nfs rw "					\
+		"ethaddr=${ethaddr} "					\
 		"ip=${ipaddr}:${serverip}:${gatewayip}:"		\
 			"${netmask}:${hostname}:${netdev}:off "		\
 		"panic=1 "						\
