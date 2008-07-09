@@ -115,6 +115,16 @@ static int rx_byte(void)
 int i2c_probe(uchar chip)
 {
 	int ret;
+	int timeout = 1000;
+
+	/* Check if bus is busy before probing next chip */
+	while ((__REG16(I2C_BASE + I2SR) & I2SR_IBB) && --timeout)
+		udelay(1);
+
+	if (timeout == 0) {
+		printf ("\nerror: bus blocked\n");
+		return -1;
+	}
 
 	__REG16(I2C_BASE + I2CR) = 0; /* Reset module */
 	__REG16(I2C_BASE + I2CR) = I2CR_IEN;
