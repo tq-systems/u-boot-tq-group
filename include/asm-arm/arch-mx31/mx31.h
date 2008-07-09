@@ -26,5 +26,6 @@
 
 extern u32 mx31_get_ipg_clk(void);
 extern void mx31_gpio_mux(unsigned long mode);
+extern void mx31_pad_ctl (u32 field, u32 val);
 
 #endif /* __ASM_ARCH_MX31_H */

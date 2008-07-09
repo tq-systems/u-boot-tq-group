@@ -49,6 +49,12 @@ static void setup_iomux (void)
 	mx31_gpio_mux (MUX_TXD1__UART1_TXD_MUX);
 	mx31_gpio_mux (MUX_RTS1__UART1_RTS_B);
 	mx31_gpio_mux (MUX_CTS1__UART1_CTS_B);
+
+	/* Pins for I2C1 */
+	mx31_gpio_mux (MUX_I2C_CLK__I2C1_SCL);
+	mx31_gpio_mux (MUX_I2C_DAT__I2C1_SDA);
+	mx31_pad_ctl (PAD_CTL_I2C_CLK, PAD_CTL_IPP_ODE_OD);
+	mx31_pad_ctl (PAD_CTL_I2C_DAT, PAD_CTL_IPP_ODE_OD);
 }
 
 int dram_init (void)

@@ -90,6 +90,23 @@ void mx31_gpio_mux(unsigned long mode)
 	__REG(reg) = tmp;
 }
 
+void mx31_pad_ctl (u32 field, u32 val)
+{
+	u32 reg, shift, mask, tmp;
+
+	/* extract 32 bit register address and shifter for bit field */
+	reg = IOMUXC_BASE + (field >> 8);
+	shift = field & 0xFF;
+
+	/* field consists of 10 bits */
+	mask = 0x3FF << shift;
+
+	tmp = __REG(reg);
+	tmp &= ~mask;
+	tmp |= (val << shift) & mask;
+	__REG(reg) = tmp;
+}
+
 #if defined(CONFIG_DISPLAY_CPUINFO)
 int print_cpuinfo (void)
 {

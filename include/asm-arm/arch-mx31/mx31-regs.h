@@ -168,6 +168,9 @@
 #define MUX_CTL_CSPI2_SS2	0x87
 #define MUX_CTL_CSPI2_MOSI	0x8b
 
+#define MUX_CTL_I2C_CLK		0xa2
+#define MUX_CTL_I2C_DAT		0xa3
+
 /* The modes a specific pin can be in
  * these macros can be used in mx31_gpio_mux() and have the form
  * MUX_[contact name]__[pin function]
@@ -179,6 +182,35 @@
 
 #define MUX_CSPI2_MOSI__I2C2_SCL ((MUX_CTL_ALT1 << 8) | MUX_CTL_CSPI2_MOSI)
 #define MUX_CSPI2_MISO__I2C2_SDA ((MUX_CTL_ALT1 << 8) | MUX_CTL_CSPI2_MISO)
+
+#define MUX_I2C_CLK__I2C1_SCL	((MUX_CTL_FUNC << 8) | MUX_CTL_I2C_CLK)
+#define MUX_I2C_DAT__I2C1_SDA	((MUX_CTL_FUNC << 8) | MUX_CTL_I2C_DAT)
+
+/* bits in the SW_PAD_CTL registers */
+#define PAD_CTL_LOOPBACK_DIS		(0 << 9)
+#define PAD_CTL_LOOPBACK_ENA		(1 << 9)
+#define PAD_CTL_IPP_PUE_DIS		(0 << 7)
+#define PAD_CTL_IPP_PUE_KEEPER		(2 << 7)
+#define PAD_CTL_IPP_PUE_PULL		(3 << 7)
+#define PAD_CTL_IPP_PUS_100K_DN		(0 << 5)
+#define PAD_CTL_IPP_PUS_100K_UP		(1 << 5)
+#define PAD_CTL_IPP_HYS_STD		(0 << 4)
+#define PAD_CTL_IPP_HYS_SCHMITT		(1 << 4)
+#define PAD_CTL_IPP_ODE_STD		(0 << 3)
+#define PAD_CTL_IPP_ODE_OD		(1 << 3)
+#define PAD_CTL_IPP_DSE_STD		(0 << 1)
+#define PAD_CTL_IPP_DSE_HIGH		(1 << 1)
+#define PAD_CTL_IPP_DSE_MAX		(2 << 1)
+#define PAD_CTL_IPP_SRE_SLOW		(0 << 0)
+#define PAD_CTL_IPP_SRE_FAST		(1 << 0)
+
+/* bit fields in the SW_PAD_CTL registers, offsets based on IOMUXC_BASE */
+#define	PAD_CTL_IO1_SHIFT		0
+#define	PAD_CTL_IO2_SHIFT		10
+#define	PAD_CTL_IO3_SHIFT		20
+#define PAD_CTL_I2C_CLK			((0x21C << 8) | PAD_CTL_IO2_SHIFT)
+#define PAD_CTL_I2C_DAT			((0x21C << 8) | PAD_CTL_IO1_SHIFT)
+
 
 /*
  * Memory regions and CS

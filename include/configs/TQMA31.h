@@ -154,6 +154,43 @@
 
 
 /*******************************************************************************
+ * I2C
+ ******************************************************************************/
+
+/* Use the processor internal controller */
+#define CONFIG_HARD_I2C
+#define CONFIG_I2C_MXC
+
+/* Configure I2C1 */
+#define CFG_I2C_MX31_PORT1
+
+#define CFG_I2C_SPEED 			100000
+#define CFG_I2C_SLAVE 			0
+
+/* Don't probe these addrs */
+#define CFG_I2C_NOPROBES		{0x00}
+
+/* I2C EEPROM, configuration for onboard EEPROM */
+#define CFG_I2C_EEPROM_ADDR		0x50
+#define CFG_I2C_EEPROM_ADDR_LEN		2
+
+/* 32 bytes per write */
+#define CFG_EEPROM_PAGE_WRITE_BITS	5
+
+#define CFG_EEPROM_PAGE_WRITE_ENABLE
+
+/* 10ms +/- 20% */
+#define CFG_EEPROM_PAGE_WRITE_DELAY_MS	12
+
+/* I2C SYSMON (LM75) */
+#define CONFIG_DTT_LM75			1	/* ON Semi's LM75 */
+#define CONFIG_DTT_SENSORS		{0}	/* Sensor addresses */
+#define CFG_DTT_MAX_TEMP		70
+#define CFG_DTT_LOW_TEMP		-30
+#define CFG_DTT_HYSTERESIS		3
+
+
+/*******************************************************************************
  * Commands
  ******************************************************************************/
 
@@ -161,6 +198,9 @@
 
 #define CONFIG_CMD_PING
 #define CONFIG_CMD_DHCP
+#define CONFIG_CMD_I2C
+#define CONFIG_CMD_DTT
+#define CONFIG_CMD_EEPROM
 
 
 /*******************************************************************************

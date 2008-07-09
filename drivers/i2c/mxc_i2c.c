@@ -209,4 +209,17 @@ int i2c_write(uchar chip, uint addr, int alen, uchar *buf, int len)
 	return 0;
 }
 
+int i2c_get_bus_speed(void)
+{
+	return -1;
+}
+
+int i2c_set_bus_speed (unsigned int speed)
+{
+	if (speed != CFG_I2C_SPEED)
+		return -1;
+
+	return 0;
+}
+
 #endif /* CONFIG_HARD_I2C */
