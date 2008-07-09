@@ -191,6 +191,24 @@
 
 
 /*******************************************************************************
+ * SPI
+ ******************************************************************************/
+
+/* Use the processor internal controller */
+#define CONFIG_HARD_SPI			1
+#define CONFIG_MXC_SPI			1
+
+/* 0=CSPI1, 1=CSPI2, 2=CSPI3 */
+#define CONFIG_DEFAULT_SPI_BUS		1
+
+/* SCLK polarity: high; chipselect: active high */
+#define CONFIG_DEFAULT_SPI_MODE		(SPI_MODE_2 | SPI_CS_HIGH)
+
+/* Add PMIC RTC driver */
+#define CONFIG_RTC_MC13783		1
+
+
+/*******************************************************************************
  * Commands
  ******************************************************************************/
 
@@ -201,6 +219,8 @@
 #define CONFIG_CMD_I2C
 #define CONFIG_CMD_DTT
 #define CONFIG_CMD_EEPROM
+#define CONFIG_CMD_SPI
+#define CONFIG_CMD_DATE
 
 
 /*******************************************************************************

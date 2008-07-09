@@ -55,6 +55,19 @@ static void setup_iomux (void)
 	mx31_gpio_mux (MUX_I2C_DAT__I2C1_SDA);
 	mx31_pad_ctl (PAD_CTL_I2C_CLK, PAD_CTL_IPP_ODE_OD);
 	mx31_pad_ctl (PAD_CTL_I2C_DAT, PAD_CTL_IPP_ODE_OD);
+
+	/* Pins for SPI2 */
+	mx31_gpio_mux (MUX_CSPI2_MOSI__CSPI2_MOSI);
+	mx31_gpio_mux (MUX_CSPI2_MISO__CSPI2_MISO);
+	mx31_gpio_mux (MUX_CSPI2_SS0__CSPI2_SS0_B);
+	mx31_gpio_mux (MUX_CSPI2_SCLK__CSPI2_CLK);
+	mx31_pad_ctl (PAD_CTL_CSPI2_SS0, 0);
+	mx31_pad_ctl (PAD_CTL_CSPI2_SS1, 0);
+	mx31_pad_ctl (PAD_CTL_CSPI2_SS2, 0);
+	mx31_pad_ctl (PAD_CTL_CSPI2_SCLK, 0);
+	mx31_pad_ctl (PAD_CTL_CSPI2_SPI_RDY, 0);
+	mx31_pad_ctl (PAD_CTL_CSPI2_MISO, 0);
+	mx31_pad_ctl (PAD_CTL_CSPI2_MOSI, 0);
 }
 
 int dram_init (void)
