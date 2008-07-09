@@ -69,6 +69,13 @@ static void setup_iomux (void)
 	mx31_pad_ctl (PAD_CTL_CSPI2_SPI_RDY, 0);
 	mx31_pad_ctl (PAD_CTL_CSPI2_MISO, 0);
 	mx31_pad_ctl (PAD_CTL_CSPI2_MOSI, 0);
+
+	/* Pins for IPU */
+	mx31_pad_ctl (PAD_CTL_FPSHIFT, PAD_CTL_IPP_PUE_PULL \
+					| PAD_CTL_IPP_PUS_100K_DN \
+					| PAD_CTL_IPP_HYS_STD \
+					| PAD_CTL_IPP_ODE_STD \
+					| PAD_CTL_IPP_SRE_FAST);
 }
 
 static int adjust_voltages (void)
