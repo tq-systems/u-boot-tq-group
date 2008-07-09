@@ -1,0 +1,2 @@
+TEXT_BASE = 0x8ff00000
+

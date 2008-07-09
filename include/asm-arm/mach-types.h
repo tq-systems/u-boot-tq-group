@@ -1596,6 +1596,7 @@ extern unsigned int __machine_arch_type;
 #define MACH_TYPE_XDACOMET             1603
 #define MACH_TYPE_DEXFLEX2             1604
 #define MACH_TYPE_SFFSDR               1657
+#define MACH_TYPE_TQMA31               1810
 
 #ifdef CONFIG_ARCH_EBSA110
 # ifdef machine_arch_type
@@ -20603,6 +20604,18 @@ extern unsigned int __machine_arch_type;
 # define machine_is_dexflex2()	(machine_arch_type == MACH_TYPE_DEXFLEX2)
 #else
 # define machine_is_dexflex2()	(0)
+#endif
+
+#ifdef CONFIG_MACH_TQMA31
+# ifdef machine_arch_type
+#  undef machine_arch_type
+#  define machine_arch_type	__machine_arch_type
+# else
+#  define machine_arch_type	MACH_TYPE_TQMA31
+# endif
+# define machine_is_tqma31()	(machine_arch_type == MACH_TYPE_TQMA31)
+#else
+# define machine_is_tqma31()	(0)
 #endif
 
 /*

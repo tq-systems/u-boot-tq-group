@@ -61,10 +61,52 @@
 #define PLL_MFI(x)		(((x) & 0xf) << 10)
 #define PLL_MFN(x)		(((x) & 0x3ff) << 0)
 
+#define ESDCTL_BASE	0xB8001000
+#define ESDCTL0		(ESDCTL_BASE + 0x00)
+#define ESDCFG0		(ESDCTL_BASE + 0x04)
+#define ESDCTL1		(ESDCTL_BASE + 0x08)
+#define ESDCFG1		(ESDCTL_BASE + 0x0C)
+#define ESDMISC		(ESDCTL_BASE + 0x10)
+#define ESDCDLY1	(ESDCTL_BASE + 0x20)
+#define ESDCDLY2	(ESDCTL_BASE + 0x24)
+#define ESDCDLY3	(ESDCTL_BASE + 0x28)
+#define ESDCDLY4	(ESDCTL_BASE + 0x2C)
+#define ESDCDLY5	(ESDCTL_BASE + 0x30)
+#define ESDCDLYL	(ESDCTL_BASE + 0x34)
+
 #define WEIM_BASE	0xb8002000
 #define CSCR_U(x)	(WEIM_BASE + (x) * 0x10)
 #define CSCR_L(x)	(WEIM_BASE + 4 + (x) * 0x10)
 #define CSCR_A(x)	(WEIM_BASE + 8 + (x) * 0x10)
+
+#define CSCR_U_CNC_1		0x00004000
+#define CSCR_U_CNC_3		0x0000C000
+#define CSCR_U_WSC_9		0x00000900
+#define CSCR_U_WSC_12		0x00000C00
+#define CSCR_U_WSC_22		0x00001600
+#define CSCR_U_EDC_4		0x00000004
+#define CSCR_U_EDC_13		0x0000000D
+
+#define CSCR_L_OEA_2		0x20000000
+#define CSCR_L_OEA_4		0x40000000
+#define CSCR_L_OEA_10		0xA0000000
+#define CSCR_L_OEN_15		0x0F000000
+#define CSCR_L_EBWA_3		0x00300000
+#define CSCR_L_EBWN_3		0x00030000
+#define CSCR_L_CSA_4		0x00004000
+#define CSCR_L_CSN_15		0x000000F0
+#define CSCR_L_EBC_ONLY_WA	0x00000800
+#define CSCR_L_DSZ_16_MUM0	0x00000500
+#define CSCR_L_CSEN		0x00000001
+
+#define CSCR_A_RWA_2		0x00200000
+#define CSCR_A_RWN_2		0x00020000
+#define CSCR_A_RWN_15		0x000F0000
+#define CSCR_A_LBN_2_MUM0	0x00000800
+
+#define WCR			(WEIM_BASE + 0x60)
+#define WCR_BCM_1		0x00000004
+#define WCR_BCM_0		0x00000000
 
 #define IOMUXC_BASE	0x43FAC000
 #define IOMUXC_GPR	(IOMUXC_BASE + 0x8)

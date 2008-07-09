@@ -2667,6 +2667,9 @@ imx31_phycore_config	: unconfig
 mx31ads_config		: unconfig
 	@$(MKCONFIG) $(@:_config=) arm arm1136 mx31ads NULL mx31
 
+TQMA31_config		: unconfig
+	@$(MKCONFIG) $(@:_config=) arm arm1136 tqma31 tqc mx31
+
 #========================================================================
 # i386
 #========================================================================
