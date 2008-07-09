@@ -294,6 +294,8 @@
  * Miscellaneous
  ******************************************************************************/
 
+#define BOARD_LATE_INIT
+
 /* Total available space for malloc in bytes */
 #define CFG_MALLOC_LEN			(CFG_ENV_SIZE + 128 * 1024)
 

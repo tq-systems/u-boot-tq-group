@@ -22,6 +22,7 @@
 
 #include <common.h>
 #include <asm/io.h>
+#include <spi.h>
 #include <asm/arch/mx31.h>
 #include <asm/arch/mx31-regs.h>
 
@@ -70,6 +71,132 @@ static void setup_iomux (void)
 	mx31_pad_ctl (PAD_CTL_CSPI2_MOSI, 0);
 }
 
+static int adjust_voltages (void)
+{
+	u32 reg;
+	u32 val;
+	static struct spi_slave *slave = NULL;
+
+	slave = spi_setup_slave(1, 0, 1000000,
+		SPI_MODE_2 | SPI_CS_HIGH);
+	if (!slave)
+		return -1;
+
+	if (spi_claim_bus(slave))
+		return -1;
+
+	/* Set PMIC arbitration switchers */
+	val = 0x000020;
+	reg = 0x14000000 | val | 0x80000000;
+	if (spi_xfer(slave, 32, (uchar *)&reg, (uchar *)&val,
+		SPI_XFER_BEGIN | SPI_XFER_END))
+		return -1;
+
+	/* Set PMIC regulator enable to 0x0 */
+	val = 0x000000;
+	reg = 0x20000000 | val | 0x80000000;
+	if (spi_xfer(slave, 32, (uchar *)&reg, (uchar *)&val,
+		SPI_XFER_BEGIN | SPI_XFER_END))
+		return -1;
+
+	/*
+	 * Set PMIC regulator setting 0
+	 *	VRFDIG = 1,8V / reset value = 1,875V
+	 *	VGEN   = 1,8V / reset value = 1,5V
+	 *	VDIG   = 1,3V / reset value = 1,5V
+	 */
+	val = 0x63cdc;
+	reg = 0x3c000000 | val | 0x80000000;
+	if (spi_xfer(slave, 32, (uchar *)&reg, (uchar *)&val,
+		SPI_XFER_BEGIN | SPI_XFER_END))
+		return -1;
+
+	/*
+	 * Set PMIC regulator mode 0 to 0x24924
+	 *	VAUDIO	= on
+	 *	VIOH	= off
+	 *	VIOLO	= on
+	 *	VDIG	= on
+	 *	VGEN	= on
+	 *	VRFDIG	= on
+	 *	VRFREF	= on
+	 *	VRFCP	= on
+	 */
+	val = 0x249241;
+	reg = 0x40000000 | val | 0x80000000;
+	if (spi_xfer(slave, 32, (uchar *)&reg, (uchar *)&val,
+		SPI_XFER_BEGIN | SPI_XFER_END))
+		return -1;
+
+	/*
+	 * Set PMIC regulator mode 1 to 0x0
+	 *	VSIM	= off
+	 *	VESIM	= off
+	 *	VCAM	= off
+	 *	VRFBG	= off
+	 *	VVIB	= off
+	 *	VRF1	= off
+	 *	VRF2	= off
+	 *	VMMC1	= off
+	 *	VMMC2	= off
+	 */
+	val = 0x0;
+	reg = 0x42000000 | val | 0x80000000;
+	if (spi_xfer(slave, 32, (uchar *)&reg, (uchar *)&val,
+		SPI_XFER_BEGIN | SPI_XFER_END))
+		return -1;
+
+	/*
+	 * FIXME: switcher settings 0 and 1.
+	 * Kernel hangs when unpacking itself.
+	 * Workaround:
+	 * Up to now CPU can operate at maximum allowed voltage 1.6 V.
+	 */
+	/*
+	 * Set PMIC switcher setting 0
+	 *	SW1A     = 1,2V / reset value = 1,6V
+	 *	SW1ADVS  = 1,6V / reset value = 1,6V
+	 *	SW1ASTBY = 1,2V / reset value = 1,6V
+	 */
+	/*
+	val = 0xc70c;
+	reg = 0x30000000 | val | 0x80000000;
+	if (spi_xfer(slave, 32, (uchar *)&reg, (uchar *)&val,
+		SPI_XFER_BEGIN | SPI_XFER_END))
+		return -1;
+	*/
+
+	/*
+	 * Set PMIC switcher setting 1
+	 *	SW1A     = 1,2V / reset value = 1,6V
+	 *	SW1ADVS  = 1,6V / reset value = 1,6V
+	 *	SW1ASTBY = 1,2V / reset value = 1,6V
+	 */
+	/*
+	val = 0xc70c;
+	reg = 0x32000000 | val | 0x80000000;
+	if (spi_xfer(slave, 32, (uchar *)&reg, (uchar *)&val,
+		SPI_XFER_BEGIN | SPI_XFER_END))
+		return -1;
+	*/
+
+	/*
+	 * Set PMIC switcher setting 5
+	 *	SW5 = 5V
+	 *	SW5 = off
+	 */
+	val = 0x021605;
+	reg = 0x3A000000 | val | 0x80000000;
+	if (spi_xfer(slave, 32, (uchar *)&reg, (uchar *)&val,
+		SPI_XFER_BEGIN | SPI_XFER_END))
+		return -1;
+
+	spi_release_bus(slave);
+	spi_free_slave(slave);
+
+	return 0;
+}
+
 int dram_init (void)
 {
 	gd->bd->bi_dram[0].start = PHYS_SDRAM_1;
@@ -106,3 +233,18 @@ int checkboard (void)
 	printf ("Board: TQMA31\n");
 	return 0;
 }
+
+int board_late_init(void)
+{
+	/*
+	 * Must call this function in late init stage, because the SPI driver,
+	 * required by this function, uses malloc(). The malloc space has not
+	 * been setup in the board_init() stage.
+	 */
+	if (adjust_voltages ()) {
+		printf ("Adjusting voltages failed!\n");
+		return -1;
+	}
+	return 0;
+}
+
